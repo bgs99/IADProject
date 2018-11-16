@@ -28,7 +28,7 @@ public class DataController {
     @RequestMapping("/place")
     public String displayPlace(@RequestParam(name = "id", required=false, defaultValue="0") int id){
         String result = "";
-        result += "Id: " +id +"\n";
+        result += "Id: " +id +"<br>";
         Place current = places.findById(id);
         if(current.getLevel()>0) {
             Place par = current.getParent();

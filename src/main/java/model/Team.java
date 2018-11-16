@@ -12,6 +12,17 @@ public class Team implements Serializable {
     public class TeamKey implements Serializable{
         private Mission mission;
         private Agent agent;
+        @Override
+        public boolean equals(Object o){
+            if(!o.getClass().equals(this.getClass()))
+                return false;
+            TeamKey ot = (TeamKey)o;
+            return ot.mission.equals(mission) && ot.agent.equals(agent);
+        }
+        @Override
+        public int hashCode(){
+            return super.hashCode();
+        }
     }
 
     @Id
