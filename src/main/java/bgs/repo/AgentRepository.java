@@ -16,15 +16,15 @@ public interface AgentRepository extends CrudRepository<Agent, Integer> {
     List<Agent> findAllByDept(Dept dept);
     List<Agent> findAllByDeptAndLevelGreaterThanEqual(Dept dept, int minLevel);
 
-    @Query("SELECT COUNT(a) from Agent as a join a.passport as b where b.location = ?1")
-    int countAgentsByLocation(Place location);
+    @Query("SELECT COUNT(a) from Agent as a join a.passport as b where b.location = ?1 and a.level <= ?2")
+    int countAgentsByLocationAndLevel(Place location, int level);
 
     @Query("SELECT sum(payment) from Agent")
     Integer salarySum();
 
-    @Query("SELECT a from Agent as a join a.passport as b where b.location = ?1")
-    List<Agent> findAllByLocation(Place location);
+    @Query("SELECT a from Agent as a join a.passport as b where b.location = ?1 and a.level <= ?2")
+    List<Agent> findAllByLocationAndLevel(Place location, int level);
 
-    @Query("select b from Agent as a join a.passport as b where b.location = ?1")
-    List<People> selectPeopleFromLocation(Place location);
+    @Query("select b from Agent as a join a.passport as b where b.location = ?1 and a.level <= ?2")
+    List<People> selectPeopleFromLocationAndLevel(Place location, int level);
 }
