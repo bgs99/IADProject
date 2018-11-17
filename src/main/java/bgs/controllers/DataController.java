@@ -1,9 +1,6 @@
 package bgs.controllers;
 
-import bgs.model.Agent;
-import bgs.model.Dept;
-import bgs.model.People;
-import bgs.model.Place;
+import bgs.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.security.core.Authentication;
@@ -34,6 +31,10 @@ public class DataController {
     AgentRepository agents;
     @Autowired
     DeptRepository depts;
+    @Autowired
+    MissionRepository missions;
+    @Autowired
+    TeamRepository teams;
 
     public class PlaceInfo{
         public String name;
@@ -109,8 +110,46 @@ public class DataController {
     }
 
     @RequestMapping("/place/locals/agents")
-    public List<AgentInfo> getLocalAgents(@RequestParam("id") int id){
+    public Stream<AgentInfo> getLocalAgents(@RequestParam("id") int id){
         int level = getLevel();
-        return agents.findAllByLocationAndLevel(places.findById(id), level).stream().map(q -> new AgentInfo(q)).collect(Collectors.toList());
+        return agents.findAllByLocationAndLevel(places.findById(id), level).stream().map(q -> new AgentInfo(q));
+    }
+
+    class TransportInfo{
+        public int id;
+        public String name;
+        public int size;
+        public int count;
+        public TransportInfo(Transport t){
+            id = t.getId();
+            name = t.toString();
+            size = t.getSize();
+            count = t.getReady();
+        }
+    }
+
+    class MissionInfo {
+        public int id;
+        public String targetName;
+        public String type;
+        public Pair<Integer, String> location;
+        public Stream<AgentInfo> team;
+        public Stream<TransportInfo> transport;
+        public MissionInfo(Mission m){
+            id = m.getId();
+            type = m.getType().getName();
+            Target tg = m.getTarget();
+            targetName = tg.isPerson() ? tg.getPerson().toString() : tg.getOrganisation().toString();
+            Place p = tg.isPerson() ? tg.getPerson().getLocation() : tg.getOrganisation().getLocation();
+            location = Pair.of(p.getId(), p.getName());
+            List<Team> ts = teams.findAllByMission(m);
+            team = ts.stream().map(t -> new AgentInfo(t.getAgent()));
+            transport = ts.stream().filter(t -> t.getTransport() != null).map(t -> new TransportInfo(t.getTransport()));
+        }
+    }
+
+    @RequestMapping("/missions")
+    public Stream<MissionInfo> getMissions(@RequestParam(value = "page", defaultValue = "0") int page){
+        return missions.findUnfinished().stream().skip(page * 10).limit(10).map(m -> new MissionInfo(m));
     }
 }

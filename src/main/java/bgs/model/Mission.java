@@ -9,10 +9,9 @@ import java.io.Serializable;
 public class Mission implements Serializable {
     @Id @GeneratedValue @Column(name = "ИД")
     private int id;
-    //@OneToOne
-    //@JoinColumn(name = "ПАСПОРТ", nullable = false, referencedColumnName = "ПАСПОРТ")
-    @Column(name = "ТИП", nullable = false)
-    private int type;
+    @ManyToOne
+    @JoinColumn(name = "ТИП", referencedColumnName = "ТИП_МИССИИ")
+    private MissionType type;
     @Column(name = "ОПИСАНИЕ")
     private String description;
     @Column(name = "СЕКРЕТНОСТЬ")
@@ -40,7 +39,7 @@ public class Mission implements Serializable {
         return level;
     }
 
-    public int getType() {
+    public MissionType getType() {
         return type;
     }
 
@@ -70,5 +69,9 @@ public class Mission implements Serializable {
 
     public void setResponsible(Agent responsible) {
         this.responsible = responsible;
+    }
+
+    public void setType(MissionType type) {
+        this.type = type;
     }
 }

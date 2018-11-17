@@ -9,9 +9,12 @@ import java.io.Serializable;
 @IdClass(Team.TeamKey.class)
 public class Team implements Serializable {
 
-    public class TeamKey implements Serializable{
+    public static class TeamKey implements Serializable{
         private Mission mission;
         private Agent agent;
+        public TeamKey(){
+
+        }
         @Override
         public boolean equals(Object o){
             if(!o.getClass().equals(this.getClass()))
