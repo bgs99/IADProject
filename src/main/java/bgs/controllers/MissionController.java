@@ -31,6 +31,8 @@ public class MissionController {
     TransportRepository transport;
     @Autowired
     PersonRepository people;
+    @Autowired
+    SupportRequestRepository req;
 
     @RequestMapping("/targets")
     public Stream<TargetInfo> getTargets(@RequestParam(value = "page", defaultValue = "0") int page){
@@ -97,4 +99,43 @@ public class MissionController {
         //TODO send mail here
         return true;
     }
+
+    @RequestMapping("/missions/update")
+    public boolean updateStatus(@RequestParam("id") int id, @RequestParam("status") String status){
+        Mission m = missions.findById(id);
+        if(m == null)
+            return false;
+        m.setStatus(status);
+        missions.save(m);
+        return true;
+    }
+
+    @RequestMapping("/missions/support/apply")
+    public boolean requestSupport(
+            @RequestParam("id") int id,
+            @RequestParam(value = "data", defaultValue = "") String data,
+            @RequestParam(value = "soldiers", defaultValue = "0") int sol,
+            @RequestParam(value = "transport", defaultValue = "-1") int tr,
+            @RequestParam(value = "weapon", defaultValue = "-1") int wp){
+        Mission m = missions.findById(id);
+        if(m == null)
+            return false;
+        SupportRequest r = new SupportRequest(m, data, sol, transport.findById(tr), weapons.findById(wp));
+        req.save(r);
+        return true;
+    }
+
+    @RequestMapping("/missions/support/process")
+    public Stream<SupportRequest> getSupportRequests(@RequestParam(value = "page", defaultValue = "0") int page){
+        return req.findAllBySeenIsFalse().stream().skip(page*10).limit(10);
+    }
+
+    @RequestMapping("/missions/support/send")
+    public boolean sendSupport(@RequestParam(value = "id") int id){
+        SupportRequest r = req.findById(id);
+        r.setSeen();
+        req.save(r);
+        return true;
+    }
+
 }
