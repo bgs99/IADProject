@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bgs.repo.*;
 
-import javax.persistence.Tuple;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
@@ -26,7 +24,7 @@ public class DataController {
     @Autowired
     PlaceRepository places;
     @Autowired
-    PeopleRepository people;
+    PersonRepository people;
     @Autowired
     AgentRepository agents;
     @Autowired
@@ -35,6 +33,12 @@ public class DataController {
     MissionRepository missions;
     @Autowired
     TeamRepository teams;
+    @Autowired
+    WeaponRepairRepository wr;
+    @Autowired
+    TransportRepairRepository tr;
+    @Autowired
+    OrganisationRepository organisations;
 
     public class PlaceInfo{
         public String name;
@@ -70,7 +74,7 @@ public class DataController {
     }
 
     @RequestMapping("/place/locals")
-    public List<People> getLocals(@RequestParam("id") int id){
+    public List<Person> getLocals(@RequestParam("id") int id){
         return people.findAllByLocationOrderByDangerDesc(places.findById(id));
     }
 
@@ -95,7 +99,7 @@ public class DataController {
         public double trust;
         public String imgPath = null;//TODO add to DB
         public AgentInfo(Agent agent){
-            People p = agent.getPassport();
+            Person p = agent.getPassport();
             id = agent.getId();
             name = p.toString();
             Dept d = agent.getDept();
@@ -151,5 +155,37 @@ public class DataController {
     @RequestMapping("/missions")
     public Stream<MissionInfo> getMissions(@RequestParam(value = "page", defaultValue = "0") int page){
         return missions.findUnfinished().stream().skip(page * 10).limit(10).map(m -> new MissionInfo(m));
+    }
+
+
+    @RequestMapping("/repairs/weapons")
+    public Stream<Repair> getWeaponRepairs(){
+        Stream<Repair> weapons = wr.findUnfinished().stream().map(q -> q);
+        return weapons;
+    }
+
+    @RequestMapping("/repairs/transport")
+    public Stream<Repair> getTransportRepairs(){
+        Stream<Repair> transport = tr.findUnfinished().stream().map(q -> q);
+        return transport;
+    }
+
+
+    @RequestMapping("/registry/people")
+    public List<RegistryEntry> getPeople(){
+        List<RegistryEntry> ret = new ArrayList<>();
+        for (Person p : people.findAll()){
+            ret.add(p);
+        }
+        return ret;
+    }
+
+    @RequestMapping("/registry/org")
+    public List<RegistryEntry> getOrganisations(){
+        List<RegistryEntry> ret = new ArrayList<>();
+        for (Organisation o : organisations.findAll()){
+            ret.add(o);
+        }
+        return ret;
     }
 }

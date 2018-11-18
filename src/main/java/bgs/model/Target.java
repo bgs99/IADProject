@@ -11,12 +11,12 @@ public class Target implements Serializable {
     private int id;
     @JoinColumn(name = "ПЕРСОНА", referencedColumnName = "ПАСПОРТ")
     @OneToOne
-    private People person;
+    private Person person;
     @OneToOne
     @JoinColumn(name = "ОРГАНИЗАЦИЯ", referencedColumnName = "ИД")
     private Organisation organisation;
     protected Target(){}
-    public Target(People person, Organisation organisation){
+    public Target(Person person, Organisation organisation){
         this.person = person;
         this.organisation = organisation;
     }
@@ -29,7 +29,7 @@ public class Target implements Serializable {
         return organisation;
     }
 
-    public People getPerson() {
+    public Person getPerson() {
         return person;
     }
 

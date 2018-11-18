@@ -11,7 +11,7 @@ public class Agent implements Serializable {
     private int id;
     @OneToOne
     @JoinColumn(name = "ПАСПОРТ", nullable = false, referencedColumnName = "ПАСПОРТ")
-    private People passport;
+    private Person passport;
     @ManyToOne
     @JoinColumn(name = "ОТДЕЛ", referencedColumnName = "ИД")
     private Dept dept;
@@ -25,7 +25,7 @@ public class Agent implements Serializable {
     private String salt;
 
     protected Agent(){}
-    public Agent(int level, Dept dept, People pass){
+    public Agent(int level, Dept dept, Person pass){
         this.level = level;
         this.dept = dept;
         this.passport = pass;
@@ -46,7 +46,7 @@ public class Agent implements Serializable {
         return level;
     }
 
-    public People getPassport() {
+    public Person getPassport() {
         return passport;
     }
 

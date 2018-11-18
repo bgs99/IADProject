@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "ГРАЖДАНЕ")
-public class People implements Serializable {
+public class Person implements RegistryEntry {
     @Id @GeneratedValue @Column(name = "ПАСПОРТ")
     private int id;
     @Column(name = "ИМЯ")
@@ -24,9 +24,9 @@ public class People implements Serializable {
     private String bio;
     @Column(name = "БИОЛОГИЧЕСКИЕ_ДАННЫЕ")
     private byte[] data;
-    protected People(){}
+    protected Person(){}
     @Override
-    public String toString(){
+    public String getName(){
         return name + " " + surname;
     }
 
@@ -41,6 +41,11 @@ public class People implements Serializable {
 
     public Double getDanger(){
         return danger;
+    }
+
+    @Override
+    public void setDanger(Double danger) {
+        this.danger = danger;
     }
 
     public Place getLocation() {

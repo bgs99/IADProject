@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "ОРГАНИЗАЦИИ")
-public class Organisation implements Serializable {
+public class Organisation implements RegistryEntry {
     @Id @GeneratedValue @Column(name = "ИД")
     private int id;
     @Column(name = "НАИМЕНОВАНИЕ")
@@ -18,7 +18,7 @@ public class Organisation implements Serializable {
     private Double danger;
     protected Organisation(){}
     @Override
-    public String toString(){
+    public String getName(){
         return name;
     }
 

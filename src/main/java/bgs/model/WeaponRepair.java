@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "РЕМОНТ_ОРУЖИЯ")
-public class WeaponRepair implements Serializable {
+public class WeaponRepair implements Repair {
     @Id @GeneratedValue @Column(name = "ИД")
     private int id;
     @ManyToOne
@@ -26,6 +26,10 @@ public class WeaponRepair implements Serializable {
         this.weapon = weapon;
         this.ready = ready;
         this.begin = begin;
+    }
+
+    public String getName(){
+        return weapon.toString();
     }
 
     public int getId() {

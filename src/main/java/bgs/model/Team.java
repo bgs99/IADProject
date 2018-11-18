@@ -44,11 +44,11 @@ public class Team implements Serializable {
     private Transport transport;
     @ManyToOne
     @JoinColumn(name = "ПРИКРЫТИЕ", referencedColumnName = "ПАСПОРТ")
-    private People cover;
+    private Person cover;
 
 
     protected Team(){}
-    public Team(Agent agent, Mission mission, Weapon weapon, Transport transport, People cover){
+    public Team(Agent agent, Mission mission, Weapon weapon, Transport transport, Person cover){
         this.agent = agent;
         this.mission = mission;
         this.weapon = weapon;
@@ -72,7 +72,7 @@ public class Team implements Serializable {
         return mission;
     }
 
-    public People getCover() {
+    public Person getCover() {
         return cover;
     }
 }
