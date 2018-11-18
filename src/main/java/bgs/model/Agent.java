@@ -34,6 +34,10 @@ public class Agent implements Serializable {
         this.salt = "bbbb";
     }
 
+    public String getName(){
+        return passport.getName();
+    }
+
     public int getId() {
         return id;
     }

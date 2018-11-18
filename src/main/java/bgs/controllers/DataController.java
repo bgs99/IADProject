@@ -6,6 +6,7 @@ import org.springframework.data.util.Pair;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +40,8 @@ public class DataController {
     TransportRepairRepository tr;
     @Autowired
     OrganisationRepository organisations;
+    @Autowired
+    InfoRequestRepository info;
 
     public class PlaceInfo{
         public String name;
@@ -59,7 +62,7 @@ public class DataController {
             parentName = parent == null ? null : parent.getName();
 
             population = place.getPopulation();
-            int level = 5;//getLevel();
+            int level = getLevel();
             cops = agents.countAgentsByLocationAndLevel(place, level);
             danger = people.getDanger(place);
             for(Place ps : places.findAllByParent(place)){
@@ -79,13 +82,7 @@ public class DataController {
     }
 
     private int getLevel(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getAuthorities().stream()
-                .map(q -> ((GrantedAuthority) q).getAuthority())
-                .filter(s -> s.startsWith("L"))
-                .map(s -> Integer.parseInt(s.substring(1)))
-                .sorted()
-                .findFirst().get();
+        return getCurrentAgent().getLevel();
     }
 
     class AgentInfo{
@@ -116,7 +113,7 @@ public class DataController {
     @RequestMapping("/place/locals/agents")
     public Stream<AgentInfo> getLocalAgents(@RequestParam("id") int id){
         int level = getLevel();
-        return agents.findAllByLocationAndLevel(places.findById(id), level).stream().map(q -> new AgentInfo(q));
+        return agents.findAllByLocationAndLevel(places.findById(id), level).stream().map(AgentInfo::new);
     }
 
     class TransportInfo{
@@ -154,20 +151,18 @@ public class DataController {
 
     @RequestMapping("/missions")
     public Stream<MissionInfo> getMissions(@RequestParam(value = "page", defaultValue = "0") int page){
-        return missions.findUnfinished().stream().skip(page * 10).limit(10).map(m -> new MissionInfo(m));
+        return missions.findUnfinished().stream().skip(page * 10).limit(10).map(MissionInfo::new);
     }
 
 
     @RequestMapping("/repairs/weapons")
     public Stream<Repair> getWeaponRepairs(){
-        Stream<Repair> weapons = wr.findUnfinished().stream().map(q -> q);
-        return weapons;
+        return wr.findUnfinished().stream().map(q -> q);
     }
 
     @RequestMapping("/repairs/transport")
     public Stream<Repair> getTransportRepairs(){
-        Stream<Repair> transport = tr.findUnfinished().stream().map(q -> q);
-        return transport;
+        return tr.findUnfinished().stream().map(q -> q);
     }
 
     class Registry{
@@ -175,11 +170,13 @@ public class DataController {
         public int id;
         public Pair<Integer, String> location;
         public double danger;
-        public Registry(RegistryEntry r){
+        public boolean status;
+        public Registry(RegistryEntry r, boolean alive){
             name = r.getName();
             id = r.getId();
             location = Pair.of(r.getLocation().getId(), r.getLocation().getName());
             danger = r.getDanger();
+            status = alive;
         }
     }
 
@@ -196,7 +193,7 @@ public class DataController {
             if(take < 0)
                 break;
             take--;
-            ret.add(new Registry(p));
+            ret.add(new Registry(p, missions.countFinishedByPerson(p) == 0));
         }
         return ret;
     }
@@ -214,8 +211,43 @@ public class DataController {
             if(take < 0)
                 break;
             take--;
-            ret.add(new Registry(o));
+            ret.add(new Registry(o, missions.countFinishedByOrganisation(o)==0));
         }
         return ret;
+    }
+
+    public Agent getCurrentAgent(){
+        String name = ((UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        return agents.findById(Integer.parseInt(name));
+    }
+
+    public class Info{
+        public int id;
+
+        public String body;
+        public Pair<Integer, String> agent;
+        public int agentLevel;
+        public String resp;
+        public String status;
+        public String purp;
+        public Info(InfoRequest i){
+            id = i.getId();
+            agent = Pair.of(i.getAgent().getId(), i.getAgent().getName());
+            resp = i.getResponse();
+            body = i.getRequest();
+            status = i.getStatus();
+            purp = i.getPurpose();
+            agentLevel = i.getAgent().getLevel();
+        }
+    }
+
+    @RequestMapping("/requests")
+    public Stream<Info> getRequests(){
+        Agent cur = getCurrentAgent();
+        return info.findVisible(cur).stream().map(Info::new);
+    }
+    @RequestMapping("/requests/process")
+    public Stream<Info> getProcessableRequests(){
+        return info.findAllAvailable(getLevel()).stream().map(Info::new);
     }
 }

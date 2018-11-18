@@ -31,12 +31,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
     @Bean
     public RoleHierarchy roleHierarchy(){
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ADMIN > MAP > USER and ADMIN > L5 > L4 > L3 > L2 > L1 > L0");
         return new CustomRoles();
     }
 
     class CustomRoles implements  RoleHierarchy{
+        GrantedAuthority admin = new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return "ADMIN";
+            }
+        };
+        GrantedAuthority clerk = new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return "CLERK";
+            }
+        };
+
+        GrantedAuthority user = new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return "USER";
+            }
+        };
 
         @Override
         public Collection<? extends GrantedAuthority> getReachableGrantedAuthorities(Collection<? extends GrantedAuthority> authorities) {
@@ -45,32 +62,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     authorities) {
                 String name = role.getAuthority();
                 if(name.equals("ADMIN")){
-                    ret.add(new GrantedAuthority() {
-                        @Override
-                        public String getAuthority() {
-                            return "MAP";
-                        }
-                    });
-                }
-                if(name.equals("MAP") || name.equals("ADMIN")){
-                    ret.add(new GrantedAuthority() {
-                        @Override
-                        public String getAuthority() {
-                            return "USER";
-                        }
-                    });
+                    ret.add(admin);
+                    ret.add(clerk);
+                    ret.add(user);
                     continue;
                 }
-                if(name.startsWith("L")){
-                    final int i = Integer.parseInt(name.substring(1));
-                    if(i > 0)
-                        ret.add(new GrantedAuthority() {
-                            @Override
-                            public String getAuthority() {
-                                return "L" + (i - 1);
-                            }
-                        });
+                if(name.equals("CLERK")){
+                    ret.add(clerk);
+                    ret.add(user);
                     continue;
+                }
+                if(name.equals("USER")){
+                    ret.add(user);
                 }
             }
             return ret;
@@ -86,13 +89,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .expressionHandler(webExpressionHandler())
                 .antMatchers("/**").hasAuthority("USER")
-                .antMatchers("/place", "place/**").hasAuthority("MAP")
-                .antMatchers("/agents/L5").hasAuthority("L5")
-                .antMatchers("/agents/L4").hasAuthority("L4")
-                .antMatchers("/agents/L3").hasAuthority("L3")
-                .antMatchers("/agents/L2").hasAuthority("L2")
-                .antMatchers("/agents/L1").hasAuthority("L1")
-                .antMatchers("/agents/L0").hasAuthority("L0")
+                .antMatchers("/requests/process").hasAuthority("CLERK")
                 .and()
                 .formLogin()
                 .and()
@@ -103,9 +100,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .inMemoryAuthentication()
-                .withUser("login").password(passwordEncoder().encode("password")).authorities("ADMIN", "L5")
+                .withUser("0").password(passwordEncoder().encode("password")).authorities("ADMIN")
                 .and()
-                .withUser("agent").password(passwordEncoder().encode("password")).authorities("MAP", "L1");
+                .withUser("18").password(passwordEncoder().encode("password")).authorities("CLERK");
     }
     @Bean
     public static BCryptPasswordEncoder passwordEncoder() {
