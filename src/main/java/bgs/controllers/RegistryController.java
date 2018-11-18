@@ -22,7 +22,8 @@ public class RegistryController {
     MissionRepository missions;
     @Autowired
     OrganisationRepository organisations;
-
+    @Autowired
+    TargetRepository targets;
 
     class Registry{
         public String name;
@@ -74,7 +75,22 @@ public class RegistryController {
         }
         return ret;
     }
-
-
-
+    @RequestMapping("/registry/people/target")
+    public boolean setTargetPerson(@RequestParam(value = "id") int id){
+        Person p = people.findById(id);
+        if(p == null)
+            return false;
+        Target t = new Target(p);
+        targets.save(t);
+        return true;
+    }
+    @RequestMapping("/registry/org/target")
+    public boolean setTargetOrganisation(@RequestParam(value = "id") int id){
+        Organisation p = organisations.findById(id);
+        if(p == null)
+            return false;
+        Target t = new Target(p);
+        targets.save(t);
+        return true;
+    }
 }

@@ -1,5 +1,6 @@
 package bgs.controllers;
 
+import bgs.info.RepairInfo;
 import bgs.model.*;
 import bgs.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,21 +23,7 @@ public class RepairController {
     @Autowired
     TransportRepairRepository tr;
 
-    public class RepairInfo{
-        public Pair<Integer, String> resp;
-        public String name;
-        public int id;
-        public String condition;
-        public Timestamp begin, end;
-        public RepairInfo(Repair r){
-            resp = r.getResponisble() != null ? Pair.of(r.getResponisble().getId(), r.getResponisble().getName()) : null;
-            name = r.getName();
-            condition = null;//TODO fix
-            begin = r.getBegin();
-            end = r.getReady();
-            id = r.getId();
-        }
-    }
+
 
     @RequestMapping("/repairs/weapons")
     public Stream<RepairInfo> getWeaponRepairs(){

@@ -3,6 +3,7 @@ package bgs.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "МИССИИ")
@@ -25,7 +26,23 @@ public class Mission implements Serializable {
     @JoinColumn(name = "ОТВЕТСТВЕННЫЙ", referencedColumnName = "ИД")
     private Agent responsible;
 
+    @OneToMany(mappedBy = "mission")
+    private List<Team> team;
+
     protected Mission(){}
+
+    public Mission(Agent resp, Target t, int level, String description, MissionType type){
+        this.type = type;
+        this.description = description;
+        this.level = level;
+        this.status = "Создана";
+        this.target = t;
+        this.responsible = resp;
+    }
+
+    public List<Team> getTeam() {
+        return team;
+    }
 
     public int getId() {
         return id;
