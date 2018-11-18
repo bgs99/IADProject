@@ -170,21 +170,51 @@ public class DataController {
         return transport;
     }
 
+    class Registry{
+        public String name;
+        public int id;
+        public Pair<Integer, String> location;
+        public double danger;
+        public Registry(RegistryEntry r){
+            name = r.getName();
+            id = r.getId();
+            location = Pair.of(r.getLocation().getId(), r.getLocation().getName());
+            danger = r.getDanger();
+        }
+    }
 
     @RequestMapping("/registry/people")
-    public List<RegistryEntry> getPeople(){
-        List<RegistryEntry> ret = new ArrayList<>();
+    public List<Registry> getPeople(@RequestParam(value = "page", defaultValue = "0") int page){
+        List<Registry> ret = new ArrayList<>();
+        int skip = page * 10;
+        int take = 10;
         for (Person p : people.findAll()){
-            ret.add(p);
+            if(skip > 0){
+                skip--;
+                continue;
+            }
+            if(take < 0)
+                break;
+            take--;
+            ret.add(new Registry(p));
         }
         return ret;
     }
 
     @RequestMapping("/registry/org")
-    public List<RegistryEntry> getOrganisations(){
-        List<RegistryEntry> ret = new ArrayList<>();
+    public List<Registry> getOrganisations(@RequestParam(value = "page", defaultValue = "0") int page){
+        List<Registry> ret = new ArrayList<>();
+        int skip = page * 10;
+        int take = 10;
         for (Organisation o : organisations.findAll()){
-            ret.add(o);
+            if(skip > 0){
+                skip--;
+                continue;
+            }
+            if(take < 0)
+                break;
+            take--;
+            ret.add(new Registry(o));
         }
         return ret;
     }
