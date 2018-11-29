@@ -4,6 +4,7 @@ import bgs.info.AgentInfo;
 import bgs.info.PlaceInfo;
 import bgs.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,7 @@ import bgs.repo.*;
 import java.util.List;
 import java.util.stream.Stream;
 
+@CrossOrigin
 @RestController
 public class PlaceController {
     @Autowired
@@ -28,6 +30,7 @@ public class PlaceController {
 
     @RequestMapping({"/place", "/"})
     public PlaceInfo getPlace(@RequestParam(name = "id", required=false, defaultValue="0") int id){
+
         return new PlaceInfo(places.findById(id), manager, agents, people, places);
     }
 
