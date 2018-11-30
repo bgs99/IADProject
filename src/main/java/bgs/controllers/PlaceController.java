@@ -31,7 +31,7 @@ public class PlaceController {
     @RequestMapping({"/place", "/"})
     public PlaceInfo getPlace(@RequestParam(name = "id", required=false, defaultValue="0") int id){
 
-        return new PlaceInfo(places.findById(id), manager, agents, people, places);
+        return new PlaceInfo(places.findById(id), manager, agents, people, places, targets);
     }
 
     @RequestMapping("/place/locals")

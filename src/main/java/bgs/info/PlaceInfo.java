@@ -5,6 +5,7 @@ import bgs.model.Place;
 import bgs.repo.AgentRepository;
 import bgs.repo.PersonRepository;
 import bgs.repo.PlaceRepository;
+import bgs.repo.TargetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,9 @@ public class PlaceInfo{
     public double danger;
     public long population;
     public int cops;
-    public PlaceInfo(Place place, LoginManager manager, AgentRepository agents, PersonRepository people, PlaceRepository places){
+    public int targets;
+    public PlaceInfo(Place place, LoginManager manager,
+                     AgentRepository agents, PersonRepository people, PlaceRepository places, TargetRepository targetsRep){
 
         name = place.getName();
         id = place.getId();
@@ -37,5 +40,6 @@ public class PlaceInfo{
         for(Place ps : places.findAllByParent(place)){
             units.add(Pair.of(ps.getId(), ps.getName()));
         }
+        targets = 0;//TODO find
     }
 }
