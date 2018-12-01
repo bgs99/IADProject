@@ -2,7 +2,6 @@ package bgs.model;
 
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "ГРАЖДАНЕ")
@@ -29,6 +28,15 @@ public class Person implements RegistryEntry {
     public String getName(){
         return name + " " + surname;
     }
+
+    public char getSex() {
+        return sex;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
 
     public int getId() {
         return id;

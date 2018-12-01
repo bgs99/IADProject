@@ -21,9 +21,13 @@ public class Agent implements Serializable {
     private int payment;
     @Column(name = "ПАРОЛЬ")
     private String pass;
-    @Column(name = "СОЛЬ")
-    private String salt;
 
+    @Column(name = "ПОЧТА")
+    private String email;
+
+    public String getEmail() {
+        return email;
+    }
     protected Agent(){}
     public Agent(int level, Dept dept, Person pass){
         this.level = level;
@@ -31,7 +35,6 @@ public class Agent implements Serializable {
         this.passport = pass;
         this.payment = 0;
         this.pass = "aaaa";
-        this.salt = "bbbb";
     }
 
     public String getName(){
@@ -72,9 +75,5 @@ public class Agent implements Serializable {
 
     public String getPass(){
         return pass;
-    }
-
-    public String getSalt() {
-        return salt;
     }
 }
