@@ -1,0 +1,7 @@
+SEPO_BOT DESCRIPTION
+
+A simple Telegram bot for course project.
+
+Since bots can't start interaction with users, functionality is limited to "request-response" operations. 
+The rest is expected to be covered with JavaMail and other means.
+Bot will fully duplicate "request-response" operations with the system.
