@@ -59,15 +59,22 @@ public class SepoBot extends AbilityBot {
 	 * those are stubs returning null.
 	 * We're working on it.
 	 * -------------------- */
-	
+
+	public Ability getId() {
+        return Ability.builder()
+                .name("getid")
+                .info("Get your telegram id")
+                .privacy(Privacy.PUBLIC)
+                .locality(Locality.USER)
+                .input(0)
+                .action(ctx -> {
+                    int id = ctx.user().getId();
+                    silent.send(String.format("%d", id), ctx.chatId());
+                })
+                .build();
+    }
+
 	public Ability getWageInfo() {
-		
-		/* TODO: GET IT FROM DB */
-
-        //
-        //
-        //silent.send(, ctx.chatId());
-
         return Ability.builder()
                 .name("wageinfo")
                 .info("Get your wage")
