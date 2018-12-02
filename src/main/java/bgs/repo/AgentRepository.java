@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface AgentRepository extends CrudRepository<Agent, Integer> {
 
+    Agent findByTelegram(int tg);
     Agent findById(int id);
     Optional<Agent> findByPassport(Person passport);
     List<Agent> findAllByDept(Dept dept);

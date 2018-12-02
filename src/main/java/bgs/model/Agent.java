@@ -21,9 +21,14 @@ public class Agent implements Serializable {
     private int payment;
     @Column(name = "ПАРОЛЬ")
     private String pass;
-
+    @Column(name = "ТЕЛЕГРАМ")
+    private Integer telegram;
     @Column(name = "ПОЧТА")
     private String email;
+
+    public Integer getTelegram() {
+        return telegram;
+    }
 
     public String getEmail() {
         return email;
