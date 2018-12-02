@@ -7,12 +7,6 @@ import org.telegram.abilitybots.api.objects.Privacy;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 
-/* 
- //If such darkest times come that "abilities" will have to be discarded -- uncomment this and deal with the API
-
- import org.telegram.telegrambots.bots.*;
- import org.telegram.telegrambots.meta.api.objects.Update;
-*/
 public class SepoBot extends AbilityBot {
 
     private final static String BOT_USER_NAME = "SEPO_BOT";
@@ -53,22 +47,69 @@ public class SepoBot extends AbilityBot {
 	/*  ABILITIES GO BELOW  */
 	/*    TREAD LIGHTLY     */
 	/* -------------------- */
-	
-	/*public Ability help() {
-	    return null;
-	}
 
-	Not needed - there are default commands for that in ability bots
-	*/
+	/* -------------------- 
+	 * These abilities rely on SepoDBHandler
+	 * which provides DB connection 
+	 * and complies with DBContext interface.
+	 * -------------------- 
+	 * As the SepoDBHandler is not yet functional
+	 * those are stubs returning null.
+	 * We're working on it.
+	 * -------------------- */
 	
 	public Ability getWageInfo() {
+		Double wage = 0.0d;
+		
+		/* TODO: GET IT FROM DB */
+		
 		return Ability.builder()
-                .name("wage")
-                .info("Get your wage")
-                .privacy(Privacy.PUBLIC)
-                .locality(Locality.USER)
-                .input(0)
-                .action(ctx -> this.silent.send("0", ctx.chatId()))
-                .build();
+	    		.name("wage_info")
+	    		.info("get your wage")
+	    		.input(0)
+	    		.locality(Locality.USER)
+	    		.privacy(Privacy.PUBLIC)
+	    		.action(ctx -> silent.send(String.format("%d", wage), ctx.chatId()))
+	    		.build();
+	}
+	
+	public Ability showMissionList() {
+		return null;
+	}
+
+	public Ability showMisssions() {
+		return null;
+	}
+	
+	public Ability showMission() {
+		return null;
+	}
+	
+	public Ability setStatus() {
+		return null;
+	}
+	
+	public Ability getMission() {
+		return null;
+	}
+	
+	public Ability requestSupport() {
+		return null;
+	}
+	
+	public Ability requestEquipment() {
+		return null;
+	}
+	
+	public Ability assign() {
+		return null;
+	}
+
+	public Ability approveRequest() {
+		return null;
+	}
+
+	public Ability denyRequest() {
+		return null;
 	}
 }

@@ -5,3 +5,7 @@ A simple Telegram bot for course project.
 Since bots can't start interaction with users, functionality is limited to "request-response" operations. 
 The rest is expected to be covered with JavaMail and other means.
 Bot will fully duplicate "request-response" operations with the system.
+
+Bot relies on DBContext implementation "SepoDBHandler" to connect with DB.
+All operations save "/help" require DB access -> working SepoDBHandler.
+Hence, stubs replace most of them. 
