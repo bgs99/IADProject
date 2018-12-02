@@ -64,7 +64,7 @@ public class SepoBot extends AbilityBot {
 		/* TODO: GET IT FROM DB */
 		
 		return Ability.builder()
-	    		.name("wage_info")
+	    		.name("wageInfo")
 	    		.info("get your wage")
 	    		.input(0)
 	    		.locality(Locality.USER)
@@ -74,42 +74,52 @@ public class SepoBot extends AbilityBot {
 	}
 	
 	public Ability showMissionList() {
-		return null;
+		return Ability.builder().name("showMissionList").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 
 	public Ability showMisssions() {
-		return null;
+		return Ability.builder().name("showMisssions").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 	
 	public Ability showMission() {
-		return null;
+		return Ability.builder().name("showMission").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 	
 	public Ability setStatus() {
-		return null;
+		return Ability.builder().name("setStatus").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 	
 	public Ability getMission() {
-		return null;
+		return Ability.builder().name("getMission").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 	
 	public Ability requestSupport() {
-		return null;
+		return Ability.builder().name("requestSupport").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 	
 	public Ability requestEquipment() {
-		return null;
+		return Ability.builder().name("requestEquipment").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 	
 	public Ability assign() {
-		return null;
+		return Ability.builder().name("assign").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 
 	public Ability approveRequest() {
-		return null;
+		return Ability.builder().name("approveRequest").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 
 	public Ability denyRequest() {
-		return null;
+		return Ability.builder().name("denyRequest").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
 	}
 }

@@ -18,13 +18,15 @@ public class Application {
     @Autowired
     TargetRepository repository;
     public static void main(String[] args) {
-        ApiContextInitializer.init();
+        if(args.length > 0 && args[0].equals("tg")) {
+            ApiContextInitializer.init();
 
-        TelegramBotsApi api = new TelegramBotsApi();
-        try {
-            api.registerBot(SepoBot.proxyBot());
-        } catch (TelegramApiRequestException e) {
-            System.out.println(e.getMessage());
+            TelegramBotsApi api = new TelegramBotsApi();
+            try {
+                api.registerBot(SepoBot.proxyBot());
+            } catch (TelegramApiRequestException e) {
+                System.out.println(e.getMessage());
+            }
         }
         SpringApplication.run(Application.class, args);
     }
