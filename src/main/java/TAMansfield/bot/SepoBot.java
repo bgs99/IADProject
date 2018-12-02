@@ -50,15 +50,6 @@ public class SepoBot extends AbilityBot {
 	/*    TREAD LIGHTLY     */
 	/* -------------------- */
 
-	/* -------------------- 
-	 * These abilities rely on SepoDBHandler
-	 * which provides DB connection 
-	 * and complies with DBContext interface.
-	 * -------------------- 
-	 * As the SepoDBHandler is not yet functional
-	 * those are stubs returning null.
-	 * We're working on it.
-	 * -------------------- */
 
 	public Ability getId() {
         return Ability.builder()
