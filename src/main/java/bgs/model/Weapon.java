@@ -13,6 +13,10 @@ public class Weapon implements Serializable {
     private String name;
     @Column(name = "ГОТОВО_ЕДИНИЦ")
     private int ready;
+    @Column(name = "ЦЕНА")
+    private int price;
+    @Column(name = "ЗАКАЗАНО")
+    private int ordered;
     protected Weapon(){}
     @Override
     public String toString(){
@@ -23,11 +27,26 @@ public class Weapon implements Serializable {
         return id;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public int getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(int ordered) {
+        this.ordered = ordered;
+    }
+
     public int getReady() {
         return ready;
     }
     public void incReady(){
         ready = ready + 1;
+    }
+    public void incReady(int amount){
+        ready = ready + amount;
     }
     public void decReady(){
         ready = ready - 1;

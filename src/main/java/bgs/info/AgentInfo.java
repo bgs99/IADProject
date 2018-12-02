@@ -3,7 +3,6 @@ package bgs.info;
 import bgs.model.Agent;
 import bgs.model.Dept;
 import bgs.model.Person;
-import org.springframework.stereotype.Component;
 
 public class AgentInfo{
     public String name;
@@ -13,8 +12,7 @@ public class AgentInfo{
     public Integer salary;
     public int level;
     public boolean free;
-    public double trust;
-    public String imgPath = null;//TODO add to DB
+    public String imgPath = null;
     private AgentInfo(){}
     public AgentInfo(Agent agent){
         Person p = agent.getPassport();
@@ -25,8 +23,8 @@ public class AgentInfo{
         deptId = d.getId();
         salary = agent.getPayment();
         level = agent.getLevel();
+        imgPath = p.getImage();
         free = true;//TODO find that
-        trust = 50;//TODO THAT TOO
 
     }
 }

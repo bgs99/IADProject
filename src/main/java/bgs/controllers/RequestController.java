@@ -1,16 +1,14 @@
 package bgs.controllers;
 
 import bgs.info.Info;
-import bgs.model.*;
-import bgs.repo.*;
+import bgs.model.Agent;
+import bgs.model.InfoRequest;
+import bgs.repo.InfoRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 @RestController
@@ -19,6 +17,8 @@ public class RequestController {
     LoginManager manager;
     @Autowired
     InfoRequestRepository info;
+    @Autowired
+    EmailService mail;
 
     @RequestMapping("/requests")
     public Stream<Info> getRequests(){
@@ -45,6 +45,12 @@ public class RequestController {
         if(level >= 0)
             req.setLevel(level);
         info.save(req);
+
+        mail.sendMail("You request have been answered", req.getAgent(),
+                String.format("For the request '%s' you have got an answer:\n\t %s",
+                        req.getRequest(),
+                        answer));
+
         return true;
     }
 

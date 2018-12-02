@@ -1,16 +1,15 @@
 package bgs.controllers;
 
+import bgs.info.MissionInfo;
+import bgs.info.ReportInfo;
+import bgs.info.TargetInfo;
 import bgs.model.*;
 import bgs.repo.*;
-import bgs.info.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 @RestController
@@ -33,6 +32,10 @@ public class MissionController {
     PersonRepository people;
     @Autowired
     SupportRequestRepository req;
+    @Autowired
+    ReportRepository reportRepository;
+    @Autowired
+    EmailService mail;
 
     @RequestMapping("/targets")
     public Stream<TargetInfo> getTargets(@RequestParam(value = "page", defaultValue = "0") int page){
@@ -74,7 +77,8 @@ public class MissionController {
             return false;
         Transport t = transport.findById(tr);
         Person cover = people.findById(cov);
-        Team tm = new Team(manager.getCurrentAgent(), m, w, t, cover);
+        Agent cur = manager.getCurrentAgent();
+        Team tm = new Team(cur, m, w, t, cover);
         teams.save(tm);
         w.decReady();
         weapons.save(w);
@@ -82,6 +86,17 @@ public class MissionController {
             t.decReady();
             transport.save(t);
         }
+
+        mail.sendMail("Agent applied for a mission", m.getResponsible(),
+                String.format("Agent %s (%d) applied for a mission %d", cur.getName(), cur.getId(), m.getId()));
+        mail.sendMail("You have applied for a mission", cur,
+                String.format("You have applied for a mission %d, your boss is %s (%d)",
+                        m.getId(),
+                        m.getResponsible().getName(),
+                        m.getResponsible().getId()
+                )
+        );
+
         return true;
     }
     @RequestMapping("/missions/start")
@@ -96,7 +111,16 @@ public class MissionController {
 
         m.setStatus("Выполняется");
         missions.save(m);
-        //TODO send mail here
+
+        mail.sendMail("Your mission have started", m.getResponsible(),
+                String.format("Your mission (%d) have started", m.getId()));
+        for (Team t :
+                m.getTeam()) {
+            Agent a = t.getAgent();
+            mail.sendMail("Your mission have started", a,
+                    String.format("Your mission (%d) have started", m.getId()));
+        }
+
         return true;
     }
 
@@ -107,16 +131,26 @@ public class MissionController {
             return false;
         m.setStatus(status);
         missions.save(m);
+
+        mail.sendMail("Your mission status have been updated", m.getResponsible(),
+                String.format("Your mission (%d) status have been updated: %s", m.getId(), status));
+        for (Team t :
+                m.getTeam()) {
+            Agent a = t.getAgent();
+            mail.sendMail("Your mission status have been updated", a,
+                    String.format("Your mission (%d) status have been updated: %s", m.getId(), status));
+        }
+
         return true;
     }
 
     @RequestMapping("/missions/support/apply")
     public boolean requestSupport(
             @RequestParam("id") int id,
-            @RequestParam(value = "data", defaultValue = "") String data,
-            @RequestParam(value = "soldiers", defaultValue = "0") int sol,
-            @RequestParam(value = "transport", defaultValue = "-1") int tr,
-            @RequestParam(value = "weapon", defaultValue = "-1") int wp){
+            @RequestParam(name = "data", defaultValue = "", required = false) String data,
+            @RequestParam(name = "soldiers", defaultValue = "0", required = false) int sol,
+            @RequestParam(name = "transport", defaultValue = "-1", required = false) int tr,
+            @RequestParam(name = "weapon", defaultValue = "-1", required = false) int wp){
         Mission m = missions.findById(id);
         if(m == null)
             return false;
@@ -126,16 +160,20 @@ public class MissionController {
     }
 
     @RequestMapping("/missions/support/process")
-    public Stream<SupportRequest> getSupportRequests(@RequestParam(value = "page", defaultValue = "0") int page){
+    public Stream<SupportRequest> getSupportRequests(@RequestParam(name = "page", defaultValue = "0", required = false) int page){
         return req.findAllBySeenIsFalse().stream().skip(page*10).limit(10);
     }
 
     @RequestMapping("/missions/support/send")
-    public boolean sendSupport(@RequestParam(value = "id") int id){
+    public boolean sendSupport(@RequestParam("id") int id){
         SupportRequest r = req.findById(id);
         r.setSeen();
         req.save(r);
         return true;
     }
 
+    @RequestMapping("/missions/reports")
+    public Stream<ReportInfo> getReport(@RequestParam("id") int id){
+        return reportRepository.findAllByMission(missions.findById(id)).stream().map(ReportInfo::new);
+    }
 }
