@@ -23,7 +23,6 @@ public class AgentInfo{
         deptId = d.getId();
         salary = agent.getPayment();
         level = agent.getLevel();
-        free = true;//TODO find that
         imgPath = p.getImage();
     }
 }

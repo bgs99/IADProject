@@ -6,9 +6,7 @@ import bgs.repo.AgentRepository;
 import bgs.repo.PersonRepository;
 import bgs.repo.PlaceRepository;
 import bgs.repo.TargetRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +38,6 @@ public class PlaceInfo{
         for(Place ps : places.findAllByParent(place)){
             units.add(Pair.of(ps.getId(), ps.getName()));
         }
-        targets = 0;//TODO find
+        targets = 0;
     }
 }

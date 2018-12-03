@@ -36,6 +36,8 @@ public class MissionController {
     @Autowired
     ReportRepository reportRepository;
     @Autowired
+    PortraitRepository portraitRepository;
+    @Autowired
     EmailService mail;
     @Autowired
     AgentRepository agents;
@@ -81,6 +83,17 @@ public class MissionController {
         Transport t = transport.findById(tr);
         Person cover = people.findById(cov);
         Agent cur = manager.getCurrentAgent();
+
+        Portrait pt = portraitRepository.findByAgent(cur);
+        MissionType mt = m.getType();
+
+        if(!(mt.getCharsima() >= pt.getCharisma()
+                && mt.getLoyalty() >= pt.getLoyalty()
+                && mt.getAgression() >= pt.getAggression())
+        ) return false;
+
+
+
         Team tm = new Team(cur, m, w, t, cover);
         teams.save(tm);
         w.decReady();
