@@ -1,13 +1,18 @@
 package TAMansfield.bot;
 
-import bgs.repo.AgentRepository;
-import bgs.model.*;
+import bgs.model.Agent;
+import bgs.model.Mission;
+import bgs.model.Team;
+import bgs.repo.*;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
 import org.telegram.abilitybots.api.objects.Locality;
 import org.telegram.abilitybots.api.objects.Privacy;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class SepoBot extends AbilityBot {
 
@@ -105,13 +110,13 @@ public class SepoBot extends AbilityBot {
 		return Ability.builder().name("showmissionlist").locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 					Agent agent = agentRepository.findByTelegram(ctx.user().getId());
-					LinkedList<Mission> mission_list = missionRepository.findUnfinished();
-					LinkedList<Integer> ids = new LinkedList<Integer>();
+					List<Mission> mission_list = missionRepository.findUnfinished();
+					List<Integer> ids = new LinkedList<Integer>();
 					
 					for(Mission mission : mission_list) {
 						if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
 								&& mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
-								&& mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAgression()	
+								&& mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAggression()
 								) {
 							ids.add(mission.getId());
 						}
@@ -135,10 +140,11 @@ public class SepoBot extends AbilityBot {
 				.privacy(Privacy.PUBLIC)
 				.action(ctx -> {
 					int id = agentRepository.findByTelegram(ctx.user().getId()).getId();
-					LinkedList<Team> teams = teamRepository.findAllByAgent(id);
-					LinkedList<Integer> ids = new LinkedList<Integer>();
+					List<Team> teams = teamRepository.findAllByAgent(agentRepository.findById(id));
+					List<Integer> ids = new LinkedList<Integer>();
                     for (Team t : teams) {
-                    	if(t.getMission().getStatus() != "Выполнена") ids.add(t.getMission().getId());
+                    	if(!t.getMission().getStatus().equals("Выполнена"))
+                    		ids.add(t.getMission().getId());
                     }
 
                     /* Forming output and sending it */
@@ -159,8 +165,9 @@ public class SepoBot extends AbilityBot {
 			.locality(Locality.USER)
 			.input(1)
 			.privacy(Privacy.PUBLIC).action(ctx -> {
+			    Mission mission = null;
 				try {
-				Mission mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
+                    mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
 				}
 				catch(Exception e) {
 					silent.send("Error while getting mission from DB", ctx.chatId());
@@ -178,40 +185,48 @@ public class SepoBot extends AbilityBot {
 	public Ability setStatus() {
 		return Ability.builder().name("setstatus").locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
+                    Mission mission = null;
 					try {
-						Mission mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
-						}
-						catch(Exception e) {
-							silent.send("Error while getting mission from DB", ctx.chatId());
-						}
+						mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
+                    }
+                    catch(Exception e) {
+                        silent.send("Error while getting mission from DB", ctx.chatId());
+                    }
+                    if(mission == null)
+                        return;
 					mission.setStatus(ctx.secondArg());
+					missionRepository.save(mission);
 				}).build();
 	}
 	
 	public Ability getMission() {
 		return Ability.builder().name("getmission").locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
+				    Agent agent = null;
+				    Mission mission = null;
 					try {
-						Agent agent = agentRepository.findByTelegram(ctx.user().getId());
-						Mission mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
-						}
-						catch(Exception e) {
-							silent.send("Error while getting mission from DB", ctx.chatId());
-						}
+						agent = agentRepository.findByTelegram(ctx.user().getId());
+						mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
+                    }
+                    catch(Exception e) {
+                        silent.send("Error while getting mission from DB", ctx.chatId());
+                    }
+
+                    if(mission == null || agent == null)
+                        return;
 					try {
-							if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
-								&& mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
-								&& mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAgression()	
-								) {
-							mission.getTeam.add(agent.getId());
-							silent.send("Successfully added", ctx.chatId());
-							}
-							else {
-								silent.send("You're unsuitable for this mission", ctx.chatId());
-							}
-						}
-					catch(Exception e)
-					{
+                        if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
+                            && mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
+                            && mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAggression()
+                            ) {
+                            Team t = new Team(agent, mission, null, null, null);
+                            teamRepository.save(t);
+                            silent.send("Successfully added", ctx.chatId());
+                        }
+                        else {
+                            silent.send("You're unsuitable for this mission", ctx.chatId());
+                        }
+                    } catch(Exception e){
 						silent.send("Internal error", ctx.chatId());
 					}
 				}).build();
@@ -237,27 +252,29 @@ public class SepoBot extends AbilityBot {
 		return Ability.builder().name("assign").locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
+                    Agent agent = null;
+                    Mission mission = null;
 					try {
-							Agent agent = agentRepository.findById(Integer.parseInt(ctx.firstArg()));
-							Mission mission = missionRepository.findById(Integer.parseInt(ctx.secondArg()));
-						}
+                        agent = agentRepository.findById(Integer.parseInt(ctx.firstArg()));
+                        mission = missionRepository.findById(Integer.parseInt(ctx.secondArg()));
+                    }
 					catch(Exception e) {
-							silent.send("Error while accessing DB", ctx.chatId());
-						}
+                        silent.send("Error while accessing DB", ctx.chatId());
+                    }
 					try {
-							if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
-								&& mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
-								&& mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAgression()	
-								) {
-							mission.getTeam.add(agent.getId());
+                        if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
+                            && mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
+                            && mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAggression()
+                            ) {
+
+                            Team t = new Team(agent, mission, null, null, null);
+							teamRepository.save(t);
 							silent.send("Successfully assigned", ctx.chatId());
-							}
-							else {
-								silent.send("He's unsuitable for this mission", ctx.chatId());
-							}
-						}
-					catch(Exception e)
-					{
+                        }
+                        else {
+                            silent.send("He's unsuitable for this mission", ctx.chatId());
+                        }
+                    } catch(Exception e) {
 						silent.send("Internal error", ctx.chatId());
 					}
 				}).build();

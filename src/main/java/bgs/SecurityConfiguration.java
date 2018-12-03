@@ -4,17 +4,13 @@ import bgs.controllers.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-<<<<<<< HEAD
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-=======
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-<<<<<<< HEAD
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.FilterInvocation;
@@ -23,16 +19,12 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-=======
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-<<<<<<< HEAD
     private SecurityExpressionHandler<FilterInvocation> webExpressionHandler() {
         DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
         defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy());
@@ -89,8 +81,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         }
     }
 
-=======
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -98,11 +88,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .and()
                 .authorizeRequests()
-<<<<<<< HEAD
                 .expressionHandler(webExpressionHandler())
                 .antMatchers("/**").hasAuthority("USER")
                 .antMatchers("/requests/process").hasAuthority("CLERK")
-=======
                 .antMatchers("/**").hasAuthority("USER")
                 .antMatchers("/requests/process").hasAuthority("CLERK")
                 .antMatchers("/agents/*").hasAuthority("CLERK")
@@ -116,7 +104,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/missions/update", "/missions/support/apply").hasAnyAuthority("FIELD", "CLERK")
                 .antMatchers("/repairs/*/apply").hasAuthority("REPAIR")
                 .antMatchers("/*/accept").hasAuthority("CLERK")
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
                 .and()
                 .formLogin()
                 .and()

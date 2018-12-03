@@ -23,24 +23,18 @@ public class Person implements RegistryEntry {
     private String bio;
     @Column(name = "БИОЛОГИЧЕСКИЕ_ДАННЫЕ")
     private byte[] data;
-<<<<<<< HEAD
-=======
     @Column(name = "ФОТО")
     private String image;
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     protected Person(){}
     @Override
     public String getName(){
         return name + " " + surname;
     }
 
-<<<<<<< HEAD
-=======
     public String getImage() {
         return image;
     }
 
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     public char getSex() {
         return sex;
     }

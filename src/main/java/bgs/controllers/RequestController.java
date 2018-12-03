@@ -1,26 +1,14 @@
 package bgs.controllers;
 
 import bgs.info.Info;
-<<<<<<< HEAD
-import bgs.model.*;
-import bgs.repo.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-=======
 import bgs.model.Agent;
 import bgs.model.InfoRequest;
 import bgs.repo.InfoRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-<<<<<<< HEAD
-import java.util.ArrayList;
-import java.util.List;
-=======
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 import java.util.stream.Stream;
 
 @RestController
@@ -29,11 +17,8 @@ public class RequestController {
     LoginManager manager;
     @Autowired
     InfoRequestRepository info;
-<<<<<<< HEAD
-=======
     @Autowired
     EmailService mail;
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 
     @RequestMapping("/requests")
     public Stream<Info> getRequests(){
@@ -60,15 +45,11 @@ public class RequestController {
         if(level >= 0)
             req.setLevel(level);
         info.save(req);
-<<<<<<< HEAD
-=======
-
         mail.sendMail("You request have been answered", req.getAgent(),
                 String.format("For the request '%s' you have got an answer:\n\t %s",
                         req.getRequest(),
                         answer));
 
->>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
         return true;
     }
 
