@@ -40,6 +40,7 @@ public class MyUserPrincipal implements UserDetails {
                 ret.add(()->"ADMIN");
             case 2:
                 ret.add(()->"CLERK");
+                break;
             default:
                 return null;
         }

@@ -5,7 +5,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ПСИХПОРТРЕТ")
+@Table(name = "ПСИХ_ПОРТРЕТ")
 public class Portrait implements Serializable {
     @Id @JoinColumn(name = "АГЕНТ", referencedColumnName = "ИД")
     private Agent agent;

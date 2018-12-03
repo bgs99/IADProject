@@ -34,9 +34,9 @@ public class SepoBot extends AbilityBot {
 
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
-        botOptions.setProxyHost("54.38.195.161");
-        botOptions.setProxyPort(58770);
-        botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
+        botOptions.setProxyHost("94.205.140.158");
+        botOptions.setProxyPort(56575);
+        botOptions.setProxyType(DefaultBotOptions.ProxyType.HTTP);
         return new SepoBot(botOptions, agentRepository, missionRepository, teamRepository, portraitRepository, infoRequestRepository, supportRequestRepository);
     }
 
@@ -154,7 +154,8 @@ public class SepoBot extends AbilityBot {
                     	msg += i;
                     	msg += "\n";
                     }
-
+					if(msg.isEmpty())
+						msg = "No missions";
                     silent.send(msg, ctx.chatId());
 				}).build();
 	}

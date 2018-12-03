@@ -89,9 +89,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .expressionHandler(webExpressionHandler())
-                .antMatchers("/**").hasAuthority("USER")
+                .antMatchers("/place", "place/**", "/agents/wage").hasAuthority("USER")
                 .antMatchers("/requests/process").hasAuthority("CLERK")
-                .antMatchers("/**").hasAuthority("USER")
                 .antMatchers("/requests/process").hasAuthority("CLERK")
                 .antMatchers("/agents/*").hasAuthority("CLERK")
                 .antMatchers(

@@ -12,7 +12,7 @@ public class RepairInfo{
     public String condition;
     public Timestamp begin, end;
     public RepairInfo(Repair r){
-        resp = r.getResponisble() != null ? Pair.of(r.getResponisble().getId(), r.getResponisble().getName()) : null;
+        resp = r.getResponsible() != null ? Pair.of(r.getResponsible().getId(), r.getResponsible().getName()) : null;
         name = r.getName();
         condition = "OK";
         begin = r.getBegin();

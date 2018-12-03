@@ -1,7 +1,6 @@
 package bgs.model;
 
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -9,7 +8,7 @@ public interface Repair extends Serializable {
 
     public int getId();
 
-    public Agent getResponisble();
+    public Agent getResponsible();
 
     public Timestamp getBegin();
 
@@ -17,7 +16,7 @@ public interface Repair extends Serializable {
 
     public void setReady(Timestamp ready);
 
-    public void setResponisble(Agent responsible);
+    public void setResponsible(Agent responsible);
 
     public String getName();
 }

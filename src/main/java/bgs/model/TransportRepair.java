@@ -2,7 +2,6 @@ package bgs.model;
 
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
@@ -15,7 +14,7 @@ public class TransportRepair implements Repair {
     private Transport transport;
     @ManyToOne
     @JoinColumn(name = "ОТВЕТСТВЕННЫЙ", referencedColumnName = "ИД")
-    private Agent responisble;
+    private Agent responsible;
     @Column(name = "ГОТОВНОСТЬ_К")
     private Timestamp ready;
     @Column(name = "НАЧАЛО")
@@ -40,8 +39,8 @@ public class TransportRepair implements Repair {
         return transport;
     }
 
-    public Agent getResponisble() {
-        return responisble;
+    public Agent getResponsible() {
+        return responsible;
     }
 
     public Timestamp getBegin() {
@@ -56,7 +55,7 @@ public class TransportRepair implements Repair {
         this.ready = ready;
     }
 
-    public void setResponisble(Agent responisble) {
-        this.responisble = responisble;
+    public void setResponsible(Agent responsible) {
+        this.responsible = responsible;
     }
 }
