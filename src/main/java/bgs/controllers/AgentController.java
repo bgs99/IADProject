@@ -25,6 +25,11 @@ public class AgentController {
     @Autowired
     EmailService mail;
 
+    @RequestMapping("/dept")
+    public String showDept(){
+        return manager.getJob(manager.getCurrentAgent()).toString();
+    }
+
     @RequestMapping("/agents/wage")
     public int getWage(@RequestParam("id") int id){
         return agents.findById(id).getPayment();
@@ -34,9 +39,13 @@ public class AgentController {
     public void changeDept(@RequestParam("id") int id,
                            @RequestParam("dept") int dept){
         Agent a = agents.findById(id);
+        Dept old = a.getDept();
         Dept d = deptRepository.findById(dept);
         a.setDept(d);
         agents.save(a);
+
+        mail.sendMail("You have been moved", a,
+                String.format("You have been moved from %s to %s", old.toString(), d.toString()));
     }
 
     @RequestMapping("/agents/promote")

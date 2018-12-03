@@ -5,9 +5,7 @@ import bgs.model.Place;
 import bgs.model.Target;
 import bgs.model.Team;
 import bgs.repo.TeamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -24,7 +22,7 @@ public class MissionInfo {
         id = m.getId();
         type = m.getType().getName();
         Target tg = m.getTarget();
-        targetName = tg.isPerson() ? tg.getPerson().toString() : tg.getOrganisation().toString();
+        targetName = tg.isPerson() ? tg.getPerson().getName() : tg.getOrganisation().toString();
         Place p = tg.isPerson() ? tg.getPerson().getLocation() : tg.getOrganisation().getLocation();
         location = Pair.of(p.getId(), p.getName());
         List<Team> ts = teams.findAllByMission(m);

@@ -4,82 +4,17 @@ import bgs.controllers.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.expression.SecurityExpressionHandler;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    private SecurityExpressionHandler<FilterInvocation> webExpressionHandler() {
-        DefaultWebSecurityExpressionHandler defaultWebSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
-        defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy());
-        return defaultWebSecurityExpressionHandler;
-    }
-    @Bean
-    public RoleHierarchy roleHierarchy(){
-        return new CustomRoles();
-    }
-
-    class CustomRoles implements  RoleHierarchy{
-        GrantedAuthority admin = new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return "ADMIN";
-            }
-        };
-        GrantedAuthority clerk = new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return "CLERK";
-            }
-        };
-
-        GrantedAuthority user = new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return "USER";
-            }
-        };
-
-        @Override
-        public Collection<? extends GrantedAuthority> getReachableGrantedAuthorities(Collection<? extends GrantedAuthority> authorities) {
-            List<GrantedAuthority> ret = new ArrayList<>();
-            for (GrantedAuthority role :
-                    authorities) {
-                String name = role.getAuthority();
-                if(name.equals("ADMIN")){
-                    ret.add(admin);
-                    ret.add(clerk);
-                    ret.add(user);
-                    continue;
-                }
-                if(name.equals("CLERK")){
-                    ret.add(clerk);
-                    ret.add(user);
-                    continue;
-                }
-                if(name.equals("USER")){
-                    ret.add(user);
-                }
-            }
-            return ret;
-        }
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -88,9 +23,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .and()
                 .authorizeRequests()
-                .expressionHandler(webExpressionHandler())
                 .antMatchers("/**").hasAuthority("USER")
                 .antMatchers("/requests/process").hasAuthority("CLERK")
+                .antMatchers("/agents/*").hasAuthority("CLERK")
+                .antMatchers(
+                        "/missions/create",
+                        "/missions/start",
+                        "/missions/support/process",
+                        "/missions/support/send",
+                        "/missions/reports").hasAuthority("CLERK")
+                .antMatchers("/missions/apply").hasAuthority("FIELD")
+                .antMatchers("/missions/update", "/missions/support/apply").hasAnyAuthority("FIELD", "CLERK")
+                .antMatchers("/repairs/*/apply").hasAuthority("REPAIR")
+                .antMatchers("/*/accept").hasAuthority("CLERK")
                 .and()
                 .formLogin()
                 .and()

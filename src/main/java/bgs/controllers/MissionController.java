@@ -2,6 +2,7 @@ package bgs.controllers;
 
 import bgs.info.MissionInfo;
 import bgs.info.ReportInfo;
+import bgs.info.SupportRequestInfo;
 import bgs.info.TargetInfo;
 import bgs.model.*;
 import bgs.repo.*;
@@ -36,6 +37,8 @@ public class MissionController {
     ReportRepository reportRepository;
     @Autowired
     EmailService mail;
+    @Autowired
+    AgentRepository agents;
 
     @RequestMapping("/targets")
     public Stream<TargetInfo> getTargets(@RequestParam(value = "page", defaultValue = "0") int page){
@@ -160,8 +163,8 @@ public class MissionController {
     }
 
     @RequestMapping("/missions/support/process")
-    public Stream<SupportRequest> getSupportRequests(@RequestParam(name = "page", defaultValue = "0", required = false) int page){
-        return req.findAllBySeenIsFalse().stream().skip(page*10).limit(10);
+    public Stream<SupportRequestInfo> getSupportRequests(@RequestParam(name = "page", defaultValue = "0", required = false) int page){
+        return req.findAllBySeenIsFalse().stream().skip(page*10).limit(10).map(SupportRequestInfo::new);
     }
 
     @RequestMapping("/missions/support/send")
@@ -175,5 +178,22 @@ public class MissionController {
     @RequestMapping("/missions/reports")
     public Stream<ReportInfo> getReport(@RequestParam("id") int id){
         return reportRepository.findAllByMission(missions.findById(id)).stream().map(ReportInfo::new);
+    }
+
+
+    @RequestMapping("/missions/report")
+    public void writeReport(@RequestParam("mission") int m,
+                            @RequestParam("agent") int s,
+                            @RequestParam("name") String name,
+                            @RequestParam("desc") String desc,
+                            @RequestParam("purp") String purp){
+        Report r = new Report(
+                missions.findById(m),
+                agents.findById(s),
+                manager.getCurrentAgent(),
+                name,
+                desc,
+                purp);
+        reportRepository.save(r);
     }
 }
