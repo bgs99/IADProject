@@ -32,6 +32,7 @@ public class PlaceController {
     PersonRepository people;
 
     @RequestMapping("/bcrypt")
+<<<<<<< HEAD
     public String gethash(){
         return new BCryptPasswordEncoder().encode("password");
     }
@@ -39,6 +40,10 @@ public class PlaceController {
     @RequestMapping("/bdecrypt")
     public Boolean checkhash(@RequestParam("pass") String hah){
         return new BCryptPasswordEncoder().matches("password", hah);
+=======
+    public String getHash(@RequestParam(name = "pass", required=false, defaultValue="password") String pass){
+        return new BCryptPasswordEncoder().encode(pass);
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     }
 
     @RequestMapping({"/place", "/"})

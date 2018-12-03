@@ -13,16 +13,22 @@ public class SepoBot extends AbilityBot {
     private final static String BOT_USER_NAME = "SEPO_BOT";
     private final static String BOT_TOKEN = "673753505:AAEdbx1W5Hzz1a-g3q54po2m7Fx-BMDth3g";;
 	private AgentRepository agentRepository;
+<<<<<<< HEAD
 	private MissionRepository missionRepository;
 	private TeamRepository teamRepository;
 
     public static SepoBot proxyBot(AgentRepository agentRepository, MissionRepository missionRepository, TeamRepository teamRepository){
+=======
+
+    public static SepoBot proxyBot(AgentRepository agentRepository){
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
         botOptions.setProxyHost("54.38.195.161");
         botOptions.setProxyPort(58770);
         botOptions.setProxyType(DefaultBotOptions.ProxyType.SOCKS5);
+<<<<<<< HEAD
         return new SepoBot(botOptions, agentRepository, missionRepository, teamRepository);
     }
 
@@ -30,6 +36,14 @@ public class SepoBot extends AbilityBot {
 		super(BOT_TOKEN, BOT_USER_NAME, options);
 		this.agentRepository = agentRepository;
 		this.missionRepository = missionRepository;
+=======
+        return new SepoBot(botOptions, agentRepository);
+    }
+
+	private SepoBot(DefaultBotOptions options, AgentRepository agentRepository) {
+		super(BOT_TOKEN, BOT_USER_NAME, options);
+		this.agentRepository = agentRepository;
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 
 	@Override
@@ -84,6 +98,7 @@ public class SepoBot extends AbilityBot {
 	
 	public Ability showMissionList() {
 		return Ability.builder().name("showmissionlist").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 				}).build();
@@ -125,61 +140,102 @@ public class SepoBot extends AbilityBot {
 				int mid = missionRepository.findById()
 
 			}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+	}
+
+	public Ability showMisssions() {
+		return Ability.builder().name("showmisssions").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+	}
+	
+	public Ability showMission() {
+		return Ability.builder().name("showmission").locality(Locality.USER)
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 	
 	public Ability setStatus() {
 		return Ability.builder().name("setstatus").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 
 				}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 	
 	public Ability getMission() {
 		return Ability.builder().name("getmission").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 
 				}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 	
 	public Ability requestSupport() {
 		return Ability.builder().name("requestsupport").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 
 				}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 	
 	public Ability requestEquipment() {
 		return Ability.builder().name("requestequipment").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 
 				}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 	
 	public Ability assign() {
 		return Ability.builder().name("assign").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 
 				}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 
 	public Ability approveRequest() {
 		return Ability.builder().name("approverequest").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 
 				}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 
 	public Ability denyRequest() {
 		return Ability.builder().name("denyrequest").locality(Locality.USER)
+<<<<<<< HEAD
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
 
 				}).build();
+=======
+				.privacy(Privacy.PUBLIC).action(ctx -> {}).build();
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 	}
 }

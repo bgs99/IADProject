@@ -41,4 +41,9 @@ public class Dept implements Serializable {
     public Dept getParent() {
         return parent;
     }
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
 }

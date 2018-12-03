@@ -15,6 +15,13 @@ public class Transport implements Serializable {
     private int ready;
     @Column(name = "ВМЕСТИМОСТЬ")
     private int size;
+<<<<<<< HEAD
+=======
+    @Column(name = "ЦЕНА")
+    private int price;
+    @Column(name = "ЗАКАЗАНО")
+    private int ordered;
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     protected Transport(){}
     @Override
     public String toString(){
@@ -25,12 +32,35 @@ public class Transport implements Serializable {
         return id;
     }
 
+<<<<<<< HEAD
+=======
+
+    public int getPrice() {
+        return price;
+    }
+
+    public int getOrdered() {
+        return ordered;
+    }
+
+    public void setOrdered(int ordered) {
+        this.ordered = ordered;
+    }
+
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     public int getReady() {
         return ready;
     }
     public void incReady(){
         ready = ready + 1;
     }
+<<<<<<< HEAD
+=======
+
+    public void incReady(int amount){
+        ready = ready + amount;
+    }
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     public void decReady(){
         ready = ready - 1;
     }

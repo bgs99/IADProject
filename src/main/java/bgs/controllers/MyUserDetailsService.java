@@ -14,7 +14,12 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Autowired
     private AgentRepository userRepository;
+<<<<<<< HEAD
 
+=======
+    @Autowired
+    private LoginManager loginManager;
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     @Override
     public UserDetails loadUserByUsername(String username) {
         Agent user = null;
@@ -26,6 +31,10 @@ public class MyUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
+<<<<<<< HEAD
         return new MyUserPrincipal(user);
+=======
+        return new MyUserPrincipal(user, loginManager.getJob(user));
+>>>>>>> a8e7f30f9397df49f7031f5a6998db0f9b3f32bb
     }
 }
