@@ -1,16 +1,22 @@
 package bgs.controllers;
 
-import bgs.model.*;
-import bgs.repo.*;
+import bgs.model.Organisation;
+import bgs.model.Person;
+import bgs.model.RegistryEntry;
+import bgs.model.Target;
+import bgs.repo.MissionRepository;
+import bgs.repo.OrganisationRepository;
+import bgs.repo.PersonRepository;
+import bgs.repo.TargetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 public class RegistryController {
@@ -75,7 +81,7 @@ public class RegistryController {
         }
         return ret;
     }
-    @RequestMapping("/registry/people/target")
+    @RequestMapping(path = "/registry/people/target", method = RequestMethod.POST)
     public boolean setTargetPerson(@RequestParam(value = "id") int id){
         Person p = people.findById(id);
         if(p == null)
@@ -84,7 +90,7 @@ public class RegistryController {
         targets.save(t);
         return true;
     }
-    @RequestMapping("/registry/org/target")
+    @RequestMapping(path = "/registry/org/target", method = RequestMethod.POST)
     public boolean setTargetOrganisation(@RequestParam(value = "id") int id){
         Organisation p = organisations.findById(id);
         if(p == null)

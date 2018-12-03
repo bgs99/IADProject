@@ -8,6 +8,7 @@ import bgs.model.*;
 import bgs.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,7 +53,7 @@ public class MissionController {
         return missions.findUnfinished().stream().skip(page * 10).limit(10).map(q -> new MissionInfo(q, teams));
     }
 
-    @RequestMapping("/missions/create")
+    @RequestMapping(path = "/missions/create", method = RequestMethod.POST)
     public boolean create(
             @RequestParam("id") int id,
             @RequestParam("level") int level,
@@ -66,7 +67,7 @@ public class MissionController {
         return true;
     }
 
-    @RequestMapping("/missions/apply")
+    @RequestMapping(path = "/missions/apply", method = RequestMethod.POST)
     public boolean apply(
             @RequestParam("id") int id,
             @RequestParam("weapon") int wp,
@@ -113,7 +114,7 @@ public class MissionController {
         );
         return true;
     }
-    @RequestMapping("/missions/start")
+    @RequestMapping(path = "/missions/start", method = RequestMethod.POST)
     public boolean start(@RequestParam("id") int id){
         Mission m = missions.findById(id);
         if(m.getStatus().equals("Выполняется") || m.getStatus().equals("Выполнена"))
@@ -138,7 +139,7 @@ public class MissionController {
         return true;
     }
 
-    @RequestMapping("/missions/update")
+    @RequestMapping(path = "/missions/update", method = RequestMethod.POST)
     public boolean updateStatus(@RequestParam("id") int id, @RequestParam("status") String status){
         Mission m = missions.findById(id);
         if(m == null)
@@ -157,7 +158,7 @@ public class MissionController {
         return true;
     }
 
-    @RequestMapping("/missions/support/apply")
+    @RequestMapping(path = "/missions/support/apply", method = RequestMethod.POST)
     public boolean requestSupport(
             @RequestParam("id") int id,
             @RequestParam(name = "data", defaultValue = "", required = false) String data,
@@ -177,7 +178,7 @@ public class MissionController {
         return req.findAllBySeenIsFalse().stream().skip(page*10).limit(10).map(SupportRequestInfo::new);
     }
 
-    @RequestMapping("/missions/support/send")
+    @RequestMapping(path = "/missions/support/send", method = RequestMethod.POST)
     public boolean sendSupport(@RequestParam("id") int id){
         SupportRequest r = req.findById(id);
         r.setSeen();
@@ -191,7 +192,7 @@ public class MissionController {
     }
 
 
-    @RequestMapping("/missions/report")
+    @RequestMapping(path = "/missions/report", method = RequestMethod.POST)
     public void writeReport(@RequestParam("mission") int m,
                             @RequestParam("agent") int s,
                             @RequestParam("name") String name,

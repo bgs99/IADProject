@@ -8,6 +8,7 @@ import bgs.repo.TransportRepairRepository;
 import bgs.repo.WeaponRepairRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +36,7 @@ public class RepairController {
         return tr.findUnfinished().stream().map(RepairInfo::new);
     }
 
-    @RequestMapping("/repairs/weapons/apply")
+    @RequestMapping(path = "/repairs/weapons/apply", method = RequestMethod.POST)
     public boolean applyWeapon(@RequestParam(name = "id") int id){
         WeaponRepair r = wr.findById(id);
         if(r.getResponsible()!=null)
@@ -47,7 +48,7 @@ public class RepairController {
         wr.save(r);
         return true;
     }
-    @RequestMapping("/repairs/transport/apply")
+    @RequestMapping(path = "/repairs/transport/apply", method = RequestMethod.POST)
     public boolean applyTransport(@RequestParam(name = "id") int id){
         TransportRepair r = tr.findById(id);
         if(r.getResponsible()!=null)

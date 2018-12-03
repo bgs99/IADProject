@@ -36,6 +36,11 @@ public class PlaceController {
         return new BCryptPasswordEncoder().encode(pass);
     }
 
+    @RequestMapping("/place/search")
+    public Stream<PlaceInfo> findPlace(@RequestParam("query") String q){
+        return places.findAllByName(q).stream().map(i -> new PlaceInfo(i, manager, agents, people, places, targets));
+    }
+
     @RequestMapping({"/place", "/"})
     public PlaceInfo getPlace(@RequestParam(name = "id", required=false, defaultValue="0") int id){
 

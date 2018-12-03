@@ -5,6 +5,7 @@ import bgs.model.Dept;
 import bgs.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +36,7 @@ public class AgentController {
         return agents.findById(id).getPayment();
     }
 
-    @RequestMapping("/agents/move")
+    @RequestMapping(value = "/agents/move", method = RequestMethod.POST)
     public void changeDept(@RequestParam("id") int id,
                            @RequestParam("dept") int dept){
         Agent a = agents.findById(id);
@@ -48,7 +49,7 @@ public class AgentController {
                 String.format("You have been moved from %s to %s", old.toString(), d.toString()));
     }
 
-    @RequestMapping("/agents/promote")
+    @RequestMapping(path = "/agents/promote", method = RequestMethod.POST)
     public boolean promote(@RequestParam("id") int id){
 
         Agent a = agents.findById(id);
@@ -65,7 +66,7 @@ public class AgentController {
     }
 
 
-    @RequestMapping("/agents/demote")
+    @RequestMapping(path = "/agents/demote", method = RequestMethod.POST)
     public boolean demote(@RequestParam("id") int id){
         Agent a = agents.findById(id);
         if(a.getLevel() == -1)
@@ -79,7 +80,7 @@ public class AgentController {
         return true;
     }
 
-    @RequestMapping("/agents/wage/set")
+    @RequestMapping(path = "/agents/wage/set", method = RequestMethod.POST)
     public void setWage(@RequestParam("id") int id, @RequestParam("wage") int wage){
         Agent a = agents.findById(id);
         int oldwage = a.getPayment();

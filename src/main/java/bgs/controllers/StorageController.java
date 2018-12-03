@@ -8,6 +8,7 @@ import bgs.repo.TransportRepository;
 import bgs.repo.WeaponRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +25,7 @@ public class StorageController {
     @Autowired
     WeaponRepository weapons;
 
-    @RequestMapping("/weapons/order")
+    @RequestMapping(path = "/weapons/order", method = RequestMethod.POST)
     public void orderWeapons(@RequestParam("id") int id,
                        @RequestParam(name = "amount", defaultValue = "1", required = false) int amount){
         Weapon w = weapons.findById(id);
@@ -32,7 +33,7 @@ public class StorageController {
         weapons.save(w);
     }
 
-    @RequestMapping("/transport/order")
+    @RequestMapping(path = "/transport/order", method = RequestMethod.POST)
     public void orderTransport(@RequestParam("id") int id,
                            @RequestParam(name = "amount", defaultValue = "1", required = false) int amount){
         Transport w = transport.findById(id);
@@ -40,7 +41,7 @@ public class StorageController {
         transport.save(w);
     }
 
-    @RequestMapping("/weapons/accept")
+    @RequestMapping(path = "/weapons/accept", method = RequestMethod.POST)
     public void acceptWeapons(@RequestParam("id") int id){
         Weapon w = weapons.findById(id);
         w.incReady(w.getOrdered());
@@ -49,7 +50,7 @@ public class StorageController {
     }
 
 
-    @RequestMapping("/transport/accept")
+    @RequestMapping(path = "/transport/accept", method = RequestMethod.POST)
     public void acceptTransport(@RequestParam("id") int id){
         Transport w = transport.findById(id);
         w.incReady(w.getOrdered());

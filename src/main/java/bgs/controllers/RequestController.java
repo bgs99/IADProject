@@ -6,6 +6,7 @@ import bgs.model.InfoRequest;
 import bgs.repo.InfoRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,7 +31,7 @@ public class RequestController {
         return info.findAllAvailable(manager.getLevel()).stream().map(Info::new);
     }
 
-    @RequestMapping("/requests/process/reply")
+    @RequestMapping(path = "/requests/process/reply", method = RequestMethod.POST)
     public boolean getReplyToRequest(
             @RequestParam(value = "id") int id,
             @RequestParam(value = "status", defaultValue = "Принят") String status,
@@ -53,7 +54,7 @@ public class RequestController {
         return true;
     }
 
-    @RequestMapping("/requests/send")
+    @RequestMapping(path = "/requests/send", method = RequestMethod.POST)
     public boolean getSendRequest(
             @RequestParam(value = "request") String request,
             @RequestParam(value = "purpose") String purpose){

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,7 +28,7 @@ public class EmailService {
         simpleMailMessage.setText(text);
         javaMailSender.send(simpleMailMessage);
     }
-    @RequestMapping("/mail")
+    @RequestMapping(name = "/mail", method = RequestMethod.POST)
     public String testMail(){
         sendMail("Test","bgs99c@gmail.com", "bgs99c@gmail.com","Test completed!");
         return "Email sent";
