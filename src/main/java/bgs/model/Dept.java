@@ -20,6 +20,8 @@ public class Dept implements Serializable {
     @ManyToOne
     @JoinColumn(name = "МЕСТОПОЛОЖЕНИЕ", referencedColumnName = "ИД")
     private Place location;
+    @Column(name = "roleId")
+    private int roleId;
     protected Dept(){}
     @Override
     public String toString(){

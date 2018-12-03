@@ -175,10 +175,10 @@ public class SepoBot extends AbilityBot {
 				}
 				String msg = String.format("ID: %s\nTYPE: %s\nDESCRIPTION: %s\nSTATUS: %s\nRESPONSIBLE: %s\n", 
 						mission.getId(), 
-						mission.getType(), 
+						mission.getType().getName(),
 						mission.getDescription(), 
 						mission.getStatus(), 
-						mission.getResponsible());
+						mission.getResponsible().getName());
 				silent.send(msg, ctx.chatId());
 			}).build();
 	}
