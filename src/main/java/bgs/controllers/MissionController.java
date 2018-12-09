@@ -88,9 +88,9 @@ public class MissionController {
         Portrait pt = portraitRepository.findByAgent(cur);
         MissionType mt = m.getType();
 
-        if(!(mt.getCharsima() >= pt.getCharisma()
+        if(!(mt.getCharisma() >= pt.getCharisma()
                 && mt.getLoyalty() >= pt.getLoyalty()
-                && mt.getAgression() >= pt.getAggression())
+                && mt.getAggression() >= pt.getAggression())
         ) return false;
 
 

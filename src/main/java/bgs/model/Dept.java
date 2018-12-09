@@ -21,7 +21,7 @@ public class Dept implements Serializable {
     @JoinColumn(name = "МЕСТОПОЛОЖЕНИЕ", referencedColumnName = "ИД")
     private Place location;
     @Column(name = "roleId")
-    private int roleId;
+    private Integer roleId;
     protected Dept(){}
     @Override
     public String toString(){
@@ -42,5 +42,9 @@ public class Dept implements Serializable {
 
     public Dept getParent() {
         return parent;
+    }
+
+    public int getRoleId() {
+        return roleId;
     }
 }

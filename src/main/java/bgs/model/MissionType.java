@@ -12,9 +12,9 @@ public class MissionType implements Serializable {
     @Column(name = "НАИМЕНОВАНИЕ")
     private String name;
     @Column(name = "ХАРИЗМА")
-    private double charsima;
+    private double charisma;
     @Column(name = "АГРЕССИВНОСТЬ")
-    private double agression;
+    private double aggression;
     @Column(name = "ПОСЛУШАНИЕ")
     private double loyalty;
     @Column(name = "РАЗМЕР_ОТРЯДА")
@@ -30,12 +30,12 @@ public class MissionType implements Serializable {
         return name;
     }
 
-    public double getCharsima() {
-        return charsima;
+    public double getCharisma() {
+        return charisma;
     }
 
-    public double getAgression() {
-        return agression;
+    public double getAggression() {
+        return aggression;
     }
 
     public double getLoyalty() {

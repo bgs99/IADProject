@@ -1,7 +1,6 @@
 package bgs;
 
 import bgs.model.Agent;
-import bgs.model.Dept;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -11,11 +10,11 @@ import java.util.List;
 
 public class MyUserPrincipal implements UserDetails {
     private Agent user;
-    private Dept dept;
+    private int role;
 
-    public MyUserPrincipal(Agent user, Dept dept) {
+    public MyUserPrincipal(Agent user, int role) {
         this.user = user;
-        this.dept = dept;
+        this.role = role;
     }
 
     @Override
@@ -23,7 +22,7 @@ public class MyUserPrincipal implements UserDetails {
         List<GrantedAuthority> ret = new ArrayList<>();
         ret.add(() -> "USER");
 
-        switch(dept.getId()){
+        switch(role){
             case 1:
                 ret.add(() -> "REPAIR");
                 break;

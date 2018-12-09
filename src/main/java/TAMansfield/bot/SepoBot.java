@@ -2,6 +2,7 @@ package TAMansfield.bot;
 
 import bgs.model.Agent;
 import bgs.model.Mission;
+import bgs.model.SupportRequest;
 import bgs.model.Team;
 import bgs.repo.*;
 import org.telegram.abilitybots.api.bot.AbilityBot;
@@ -34,8 +35,8 @@ public class SepoBot extends AbilityBot {
 
         DefaultBotOptions botOptions = ApiContext.getInstance(DefaultBotOptions.class);
 
-        botOptions.setProxyHost("94.205.140.158");
-        botOptions.setProxyPort(56575);
+        botOptions.setProxyHost("51.254.50.239");
+        botOptions.setProxyPort(3128);
         botOptions.setProxyType(DefaultBotOptions.ProxyType.HTTP);
         return new SepoBot(botOptions, agentRepository, missionRepository, teamRepository, portraitRepository, infoRequestRepository, supportRequestRepository);
     }
@@ -94,7 +95,7 @@ public class SepoBot extends AbilityBot {
 	public Ability getWageInfo() {
         return Ability.builder()
                 .name("wageinfo")
-                .info("Get your wage")
+                .info("Show your current wage")
                 .privacy(Privacy.PUBLIC)
                 .locality(Locality.USER)
                 .input(0)
@@ -110,25 +111,19 @@ public class SepoBot extends AbilityBot {
 		return Ability.builder().name("showmissionlist").locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 					Agent agent = agentRepository.findByTelegram(ctx.user().getId());
-					List<Mission> mission_list = missionRepository.findUnfinished();
-					List<Integer> ids = new LinkedList<Integer>();
+					List<Mission> mission_list = missionRepository.findAcceptable(agent);
+
 					
-					for(Mission mission : mission_list) {
-						if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
-								&& mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
-								&& mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAggression()
-								) {
-							ids.add(mission.getId());
-						}
-					}
-					
-                    String msg = new String();
-                    for (Integer i : ids) {
-                    	msg += i;
-                    	msg += "\n";
+                    StringBuilder msg = new StringBuilder();
+                    for (Mission i : mission_list) {
+                    	msg.append(String.format("/showmission %d", i.getId()));
+                    }
+                    if(msg.toString().isEmpty()){
+                        silent.send("No missions available", ctx.chatId());
+                        return;
                     }
 
-                    silent.send(msg, ctx.chatId());
+                    silent.send(msg.toString(), ctx.chatId());
 				}).build();
 	}
 
@@ -216,9 +211,9 @@ public class SepoBot extends AbilityBot {
                     if(mission == null || agent == null)
                         return;
 					try {
-                        if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
-                            && mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
-                            && mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAggression()
+                        if(mission.getType().getCharisma() <= portraitRepository.findByAgent(agent).getCharisma()
+                            && mission.getType().getLoyalty() <= portraitRepository.findByAgent(agent).getLoyalty()
+                            && mission.getType().getAggression() <= portraitRepository.findByAgent(agent).getAggression()
                             ) {
                             Team t = new Team(agent, mission, null, null, null);
                             teamRepository.save(t);
@@ -234,10 +229,29 @@ public class SepoBot extends AbilityBot {
 	}
 	
 	public Ability requestSupport() {
-		return Ability.builder().name("requestsupport").locality(Locality.USER)
+		return Ability.builder()
+                .name("requestsupport")
+                .info("Request soldiers for your current mission")
+                .locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
+				    Mission m = null;
+				    Agent a = agentRepository.findByTelegram(ctx.user().getId());
+				    m = missionRepository.findActiveByResponsible(a).orElse(null);
+				    if(m == null){
+                        Team t = teamRepository.findActiveByAgent(a).orElse(null);
+                        if(t == null){
+                            silent.send("You are currently not on a mission", ctx.chatId());
+                            return;
+                        }
+                        m = t.getMission();
+				    }
 
-
+					if(ctx.secondArg() == null || ctx.secondArg().isEmpty()){
+						silent.send("Soldiers count not specified", ctx.chatId());
+					}
+                    SupportRequest r = new SupportRequest(m, null, Integer.parseInt(ctx.secondArg()), null, null);
+                    supportRequestRepository.save(r);
+					silent.send(String.format("Requested %s soldiers for mission %s", ctx.secondArg(), ctx.firstArg()), ctx.chatId());
 				}).build();
 	}
 	
@@ -263,9 +277,9 @@ public class SepoBot extends AbilityBot {
                         silent.send("Error while accessing DB", ctx.chatId());
                     }
 					try {
-                        if(mission.getType().getCharsima() >= portraitRepository.findByAgent(agent).getCharisma()
+                        if(mission.getType().getCharisma() >= portraitRepository.findByAgent(agent).getCharisma()
                             && mission.getType().getLoyalty() >= portraitRepository.findByAgent(agent).getLoyalty()
-                            && mission.getType().getAgression() >= portraitRepository.findByAgent(agent).getAggression()
+                            && mission.getType().getAggression() >= portraitRepository.findByAgent(agent).getAggression()
                             ) {
 
                             Team t = new Team(agent, mission, null, null, null);
