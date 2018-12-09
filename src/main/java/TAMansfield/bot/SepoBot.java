@@ -12,7 +12,6 @@ import org.telegram.abilitybots.api.objects.Privacy;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class SepoBot extends AbilityBot {
@@ -108,7 +107,9 @@ public class SepoBot extends AbilityBot {
 	
 	
 	public Ability showMissionList() {
-		return Ability.builder().name("showmissionlist").locality(Locality.USER)
+		return Ability.builder().name("showmissionlist")
+				.info("Shows all available missions as \"ID - TYPE\" that you can assign yourself on.")
+				.locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 					Agent agent = agentRepository.findByTelegram(ctx.user().getId());
 					List<Mission> mission_list = missionRepository.findAcceptable(agent);
@@ -127,37 +128,26 @@ public class SepoBot extends AbilityBot {
 				}).build();
 	}
 
-	public Ability showMisssions() {
+	public Ability showMissions() {
 		return Ability.builder()
-				.name("showmisssions")
-				.info("Show your missions")
+				.name("showmissions")
+				.info("Show missions you're assigned to.")
 				.locality(Locality.USER)
 				.privacy(Privacy.PUBLIC)
 				.action(ctx -> {
 					int id = agentRepository.findByTelegram(ctx.user().getId()).getId();
 					List<Team> teams = teamRepository.findAllByAgent(agentRepository.findById(id));
-					List<Integer> ids = new LinkedList<Integer>();
                     for (Team t : teams) {
                     	if(!t.getMission().getStatus().equals("Выполнена"))
-                    		ids.add(t.getMission().getId());
+		                    silent.send(""+t.getMission().getId(), ctx.chatId());
                     }
-
-                    /* Forming output and sending it */
-
-                    String msg = new String();
-                    for (Integer i : ids) {
-                    	msg += i;
-                    	msg += "\n";
-                    }
-					if(msg.isEmpty())
-						msg = "No missions";
-                    silent.send(msg, ctx.chatId());
 				}).build();
 	}
 	
 	public Ability showMission() {
 		return Ability.builder()
 			.name("showmission")
+			.info("Shows information about mission")
 			.locality(Locality.USER)
 			.input(1)
 			.privacy(Privacy.PUBLIC).action(ctx -> {
@@ -196,7 +186,9 @@ public class SepoBot extends AbilityBot {
 	}
 	
 	public Ability getMission() {
-		return Ability.builder().name("getmission").locality(Locality.USER)
+		return Ability.builder().name("getmission")
+				.info("Assign yourself for the mission")
+				.locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 				    Agent agent = null;
 				    Mission mission = null;
@@ -205,7 +197,7 @@ public class SepoBot extends AbilityBot {
 						mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
                     }
                     catch(Exception e) {
-                        silent.send("Error while getting mission from DB", ctx.chatId());
+                        silent.send("Error while getting information from DB", ctx.chatId());
                     }
 
                     if(mission == null || agent == null)
@@ -214,6 +206,7 @@ public class SepoBot extends AbilityBot {
                         if(mission.getType().getCharisma() <= portraitRepository.findByAgent(agent).getCharisma()
                             && mission.getType().getLoyalty() <= portraitRepository.findByAgent(agent).getLoyalty()
                             && mission.getType().getAggression() <= portraitRepository.findByAgent(agent).getAggression()
+
                             ) {
                             Team t = new Team(agent, mission, null, null, null);
                             teamRepository.save(t);
