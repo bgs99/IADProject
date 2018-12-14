@@ -28,7 +28,7 @@ public class EmailService {
         simpleMailMessage.setText(text);
         javaMailSender.send(simpleMailMessage);
     }
-    @RequestMapping(name = "/mail", method = RequestMethod.POST)
+    @RequestMapping(path = "/mail", method = RequestMethod.POST)
     public String testMail(){
         sendMail("Test","bgs99c@gmail.com", "bgs99c@gmail.com","Test completed!");
         return "Email sent";
