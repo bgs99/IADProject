@@ -36,22 +36,42 @@ public class PlaceController {
         return new BCryptPasswordEncoder().encode(pass);
     }
 
+    /**
+     * Find place by name
+     * @param q Search query
+     * @return Stream of place info that corresponds to that name
+     */
     @RequestMapping("/place/search")
     public Stream<PlaceInfo> findPlace(@RequestParam("query") String q){
         return places.findAllByName(q).stream().map(i -> new PlaceInfo(i, manager, agents, people, places, targets));
     }
 
-    @RequestMapping({"/place", "/"})
+    /**
+     * Returns place info
+     * @param id ID of a place
+     * @return Place info
+     */
+    @RequestMapping({"/place"})
     public PlaceInfo getPlace(@RequestParam(name = "id", required=false, defaultValue="0") int id){
 
         return new PlaceInfo(places.findById(id), manager, agents, people, places, targets);
     }
 
+    /**
+     * Get locals from a place
+     * @param id Place ID
+     * @return List of person info
+     */
     @RequestMapping("/place/locals")
     public List<Person> getLocals(@RequestParam("id") int id){
         return people.findAllByLocationOrderByDangerDesc(places.findById(id));
     }
 
+    /**
+     * Get agents from place
+     * @param id Place ID
+     * @return Stream of agent info
+     */
     @RequestMapping("/place/locals/agents")
     public Stream<AgentInfo> getLocalAgents(@RequestParam("id") int id){
         int level = manager.getLevel();

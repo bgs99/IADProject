@@ -25,6 +25,11 @@ public class StorageController {
     @Autowired
     WeaponRepository weapons;
 
+    /**
+     * Order weapons
+     * @param id Weapon ID
+     * @param amount Weapon amount
+     */
     @RequestMapping(path = "/weapons/order", method = RequestMethod.POST)
     public void orderWeapons(@RequestParam("id") int id,
                        @RequestParam(name = "amount", defaultValue = "1", required = false) int amount){
@@ -33,6 +38,11 @@ public class StorageController {
         weapons.save(w);
     }
 
+    /**
+     * Order transport
+     * @param id Transport ID
+     * @param amount Transport amount
+     */
     @RequestMapping(path = "/transport/order", method = RequestMethod.POST)
     public void orderTransport(@RequestParam("id") int id,
                            @RequestParam(name = "amount", defaultValue = "1", required = false) int amount){
@@ -41,6 +51,10 @@ public class StorageController {
         transport.save(w);
     }
 
+    /**
+     * Accept weapon order
+     * @param id Order ID
+     */
     @RequestMapping(path = "/weapons/accept", method = RequestMethod.POST)
     public void acceptWeapons(@RequestParam("id") int id){
         Weapon w = weapons.findById(id);
@@ -49,7 +63,10 @@ public class StorageController {
         weapons.save(w);
     }
 
-
+    /**
+     * Accept transport order
+     * @param id Transport ID
+     */
     @RequestMapping(path = "/transport/accept", method = RequestMethod.POST)
     public void acceptTransport(@RequestParam("id") int id){
         Transport w = transport.findById(id);

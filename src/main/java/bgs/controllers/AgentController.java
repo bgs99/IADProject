@@ -31,11 +31,21 @@ public class AgentController {
         return manager.getJob(manager.getCurrentAgent()).toString();
     }
 
+    /**
+     * Returns current wage of the agent
+     * @param id ID of an agent
+     * @return amount in RUB
+     */
     @RequestMapping("/agents/wage")
     public int getWage(@RequestParam("id") int id){
         return agents.findById(id).getPayment();
     }
 
+    /**
+     * Moves agent to another department
+     * @param id ID of an agent
+     * @param dept ID of a department
+     */
     @RequestMapping(value = "/agents/move", method = RequestMethod.POST)
     public void changeDept(@RequestParam("id") int id,
                            @RequestParam("dept") int dept){
@@ -49,6 +59,11 @@ public class AgentController {
                 String.format("You have been moved from %s to %s", old.toString(), d.toString()));
     }
 
+    /**
+     * Promotes agent to a new level
+     * @param id ID of an agent
+     * @return success
+     */
     @RequestMapping(path = "/agents/promote", method = RequestMethod.POST)
     public boolean promote(@RequestParam("id") int id){
 
@@ -65,7 +80,11 @@ public class AgentController {
         return true;
     }
 
-
+    /**
+     * Demotes agent to a lower level
+     * @param id ID of an agent
+     * @return success
+     */
     @RequestMapping(path = "/agents/demote", method = RequestMethod.POST)
     public boolean demote(@RequestParam("id") int id){
         Agent a = agents.findById(id);
@@ -80,6 +99,11 @@ public class AgentController {
         return true;
     }
 
+    /**
+     * Changes agent's wage
+     * @param id ID of an agent
+     * @param wage New wage in RUB
+     */
     @RequestMapping(path = "/agents/wage/set", method = RequestMethod.POST)
     public void setWage(@RequestParam("id") int id, @RequestParam("wage") int wage){
         Agent a = agents.findById(id);

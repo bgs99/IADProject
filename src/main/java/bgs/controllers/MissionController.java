@@ -43,16 +43,34 @@ public class MissionController {
     @Autowired
     AgentRepository agents;
 
+    /**
+     * Returns 10 active targets
+     * @param page Page index
+     * @return Stream of target info
+     */
     @RequestMapping("/targets")
     public Stream<TargetInfo> getTargets(@RequestParam(value = "page", defaultValue = "0") int page){
         return targets.findAllActive().stream().skip(page*10).limit(10).map(TargetInfo::new);
     }
 
+    /**
+     * Returns 10 active missions
+     * @param page Page index
+     * @return Stream of mission info
+     */
     @RequestMapping("/missions")
     public Stream<MissionInfo> getMissions(@RequestParam(value = "page", defaultValue = "0") int page){
         return missions.findUnfinished().stream().skip(page * 10).limit(10).map(q -> new MissionInfo(q, teams));
     }
 
+    /**
+     * Creates a new mission
+     * @param id Target ID
+     * @param level Access level
+     * @param description Description of a mission
+     * @param type Type of a mission
+     * @return Success
+     */
     @RequestMapping(path = "/missions/create", method = RequestMethod.POST)
     public boolean create(
             @RequestParam("id") int id,
@@ -67,6 +85,14 @@ public class MissionController {
         return true;
     }
 
+    /**
+     * Apply for a mission
+     * @param id ID of a mission
+     * @param wp Your weapon
+     * @param tr Your transport, if present
+     * @param cov Your cover, if present
+     * @return Success
+     */
     @RequestMapping(path = "/missions/apply", method = RequestMethod.POST)
     public boolean apply(
             @RequestParam("id") int id,
@@ -114,6 +140,12 @@ public class MissionController {
         );
         return true;
     }
+
+    /**
+     * Start a pending mission
+     * @param id ID of a mission
+     * @return success
+     */
     @RequestMapping(path = "/missions/start", method = RequestMethod.POST)
     public boolean start(@RequestParam("id") int id){
         Mission m = missions.findById(id);
@@ -139,6 +171,12 @@ public class MissionController {
         return true;
     }
 
+    /**
+     * Update status of a mission
+     * @param id ID of a mission
+     * @param status New status
+     * @return success
+     */
     @RequestMapping(path = "/missions/update", method = RequestMethod.POST)
     public boolean updateStatus(@RequestParam("id") int id, @RequestParam("status") String status){
         Mission m = missions.findById(id);
@@ -158,6 +196,15 @@ public class MissionController {
         return true;
     }
 
+    /**
+     * Send support request
+     * @param id Mission ID
+     * @param data Needed info
+     * @param sol Soldiers count
+     * @param tr Transport ID
+     * @param wp Weapon ID
+     * @return success
+     */
     @RequestMapping(path = "/missions/support/apply", method = RequestMethod.POST)
     public boolean requestSupport(
             @RequestParam("id") int id,
@@ -173,25 +220,46 @@ public class MissionController {
         return true;
     }
 
+    /**
+     * Returns 10 active support request
+     * @param page Page index
+     * @return Stream of request info
+     */
     @RequestMapping("/missions/support/process")
     public Stream<SupportRequestInfo> getSupportRequests(@RequestParam(name = "page", defaultValue = "0", required = false) int page){
         return req.findAllBySeenIsFalse().stream().skip(page*10).limit(10).map(SupportRequestInfo::new);
     }
 
+    /**
+     * Set support request status to 'processed'
+     * @param id ID of request
+     */
     @RequestMapping(path = "/missions/support/send", method = RequestMethod.POST)
-    public boolean sendSupport(@RequestParam("id") int id){
+    public void sendSupport(@RequestParam("id") int id){
         SupportRequest r = req.findById(id);
         r.setSeen();
         req.save(r);
-        return true;
     }
 
+    /**
+     * Show mission's reports
+     * @param id ID of a mission
+     * @return Stream of report info
+     */
     @RequestMapping("/missions/reports")
     public Stream<ReportInfo> getReport(@RequestParam("id") int id){
         return reportRepository.findAllByMission(missions.findById(id)).stream().map(ReportInfo::new);
     }
 
 
+    /**
+     * Write mission report
+     * @param m Mission ID
+     * @param s Subject ID
+     * @param name Title of report
+     * @param desc Description of report
+     * @param purp Purpose of report
+     */
     @RequestMapping(path = "/missions/report", method = RequestMethod.POST)
     public void writeReport(@RequestParam("mission") int m,
                             @RequestParam("agent") int s,

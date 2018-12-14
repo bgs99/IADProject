@@ -10,8 +10,8 @@ import java.io.Serializable;
 public class Team implements Serializable {
 
     public static class TeamKey implements Serializable{
-        private Mission mission;
-        private Agent agent;
+        private int mission;
+        private int agent;
         public TeamKey(){
 
         }
@@ -20,7 +20,7 @@ public class Team implements Serializable {
             if(!o.getClass().equals(this.getClass()))
                 return false;
             TeamKey ot = (TeamKey)o;
-            return ot.mission.equals(mission) && ot.agent.equals(agent);
+            return ot.mission == mission && ot.agent == agent;
         }
         @Override
         public int hashCode(){

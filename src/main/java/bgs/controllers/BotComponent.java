@@ -31,7 +31,7 @@ public class BotComponent {
 
     @PostConstruct
     public void init(){
-        if(env.getProperty("TELEGRAM")!=null|| true) {
+        if(env.getProperty("TELEGRAM")!=null) {
             ApiContextInitializer.init();
             TelegramBotsApi api = new TelegramBotsApi();
             try {

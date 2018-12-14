@@ -102,7 +102,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/missions/apply").hasAuthority("FIELD")
                 .antMatchers("/missions/update", "/missions/support/apply").hasAnyAuthority("FIELD", "CLERK")
                 .antMatchers("/repairs/*/apply").hasAuthority("REPAIR")
-                .antMatchers("/*/accept").hasAuthority("CLERK")
                 .and()
                 .formLogin()
                 .and()

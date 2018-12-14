@@ -25,17 +25,30 @@ public class RepairController {
     TransportRepairRepository tr;
 
 
-
+    /**
+     * Returns active weapon repairs
+     * @return Stream of repair info
+     */
     @RequestMapping("/repairs/weapons")
     public Stream<RepairInfo> getWeaponRepairs(){
         return wr.findUnfinished().stream().map(RepairInfo::new);
     }
 
+
+    /**
+     * Returns active transport repairs
+     * @return Stream of repair info
+     */
     @RequestMapping("/repairs/transport")
     public Stream<RepairInfo> getTransportRepairs(){
         return tr.findUnfinished().stream().map(RepairInfo::new);
     }
 
+    /**
+     * Apply for weapon repair job
+     * @param id Job ID
+     * @return success
+     */
     @RequestMapping(path = "/repairs/weapons/apply", method = RequestMethod.POST)
     public boolean applyWeapon(@RequestParam(name = "id") int id){
         WeaponRepair r = wr.findById(id);
@@ -48,6 +61,12 @@ public class RepairController {
         wr.save(r);
         return true;
     }
+
+    /**
+     * Apply for transport repair job
+     * @param id Job ID
+     * @return success
+     */
     @RequestMapping(path = "/repairs/transport/apply", method = RequestMethod.POST)
     public boolean applyTransport(@RequestParam(name = "id") int id){
         TransportRepair r = tr.findById(id);

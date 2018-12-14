@@ -7,7 +7,11 @@ import java.io.Serializable;
 @Entity
 @Table(name = "ЗАПРОСЫ_ПОДДЕРЖКИ")
 public class SupportRequest implements Serializable {
-    @Id @GeneratedValue @Column(name = "ИД")
+    @Id
+    @GeneratedValue(generator = "ЗАПРОСЫ_ПОДДЕРЖКИ_ИД_seq")
+    @SequenceGenerator(name = "ЗАПРОСЫ_ПОДДЕРЖКИ_ИД_seq", sequenceName = "ЗАПРОСЫ_ПОДДЕРЖКИ_ИД_seq", allocationSize = 1)
+    @Column(name = "ИД")
+
     private int id;
     @ManyToOne
     @JoinColumn(name = "МИССИЯ", referencedColumnName = "ИД")

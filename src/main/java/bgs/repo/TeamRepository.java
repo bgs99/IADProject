@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface TeamRepository extends CrudRepository<Team, Integer> {
+public interface TeamRepository extends CrudRepository<Team, Team.TeamKey> {
     List<Team> findAllByMission(Mission mission);
     List<Team> findAllByAgent(Agent agent);
-    @Query("select t from Team as t join t.agent as a join t.mission as m where a = ?1 and m.status = 'Выполняется'")
+    @Query("select t from Team as t join t.agent as a join t.mission as m where a = ?1 and m.status <> 'Выполнена'")
     Optional<Team> findActiveByAgent(Agent agent);
 }

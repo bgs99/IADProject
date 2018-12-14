@@ -21,16 +21,33 @@ public class RequestController {
     @Autowired
     EmailService mail;
 
+    /**
+     * Return your requests
+     * @return Stream of info
+     */
     @RequestMapping("/requests")
     public Stream<Info> getRequests(){
         Agent cur = manager.getCurrentAgent();
         return info.findVisible(cur).stream().map(Info::new);
     }
+
+    /**
+     * Return requests available for processiong
+     * @return Stream of info
+     */
     @RequestMapping("/requests/process")
     public Stream<Info> getProcessableRequests(){
         return info.findAllAvailable(manager.getLevel()).stream().map(Info::new);
     }
 
+    /**
+     * Reply to request
+     * @param id Request ID
+     * @param status New request status
+     * @param answer Answer to request
+     * @param level Level change
+     * @return success
+     */
     @RequestMapping(path = "/requests/process/reply", method = RequestMethod.POST)
     public boolean getReplyToRequest(
             @RequestParam(value = "id") int id,
@@ -54,6 +71,12 @@ public class RequestController {
         return true;
     }
 
+    /**
+     * Write info request
+     * @param request Request body
+     * @param purpose Purpose of the request
+     * @return
+     */
     @RequestMapping(path = "/requests/send", method = RequestMethod.POST)
     public boolean getSendRequest(
             @RequestParam(value = "request") String request,

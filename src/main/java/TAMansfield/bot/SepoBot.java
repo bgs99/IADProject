@@ -8,10 +8,17 @@ import bgs.repo.*;
 import org.telegram.abilitybots.api.bot.AbilityBot;
 import org.telegram.abilitybots.api.objects.Ability;
 import org.telegram.abilitybots.api.objects.Locality;
+import org.telegram.abilitybots.api.objects.MessageContext;
 import org.telegram.abilitybots.api.objects.Privacy;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SepoBot extends AbilityBot {
@@ -112,76 +119,144 @@ public class SepoBot extends AbilityBot {
 				.locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 					Agent agent = agentRepository.findByTelegram(ctx.user().getId());
+					if(getCurrentMission(ctx) != null){
+                        silent.send("Already on a mission, see /showcurrent", ctx.chatId());
+                        return;
+                    }
 					List<Mission> mission_list = missionRepository.findAcceptable(agent);
 
-					
+                    SendMessage sm = new SendMessage();
+
+                    ReplyKeyboardMarkup rk = new ReplyKeyboardMarkup();
+                    List<KeyboardRow> bs = new ArrayList<>();
                     StringBuilder msg = new StringBuilder();
+
                     for (Mission i : mission_list) {
-                    	msg.append(String.format("/showmission %d", i.getId()));
+                        KeyboardRow kr = new KeyboardRow();
+                        KeyboardButton kb = new KeyboardButton();
+                        kb.setText(String.format("/showmission %d", i.getId()));
+                        kr.add(kb);
+                        bs.add(kr);
+                    	msg.append(String.format("\n/showmission %d", i.getId()));
                     }
                     if(msg.toString().isEmpty()){
                         silent.send("No missions available", ctx.chatId());
                         return;
                     }
-
-                    silent.send(msg.toString(), ctx.chatId());
-				}).build();
+                    rk.setKeyboard(bs);
+                    rk.setOneTimeKeyboard(true);
+                    rk.setResizeKeyboard(true);
+                    sm.setReplyMarkup(rk);
+                    sm.setText(String.format("Here are all missions available for you:\n%s", msg.toString()));
+                    sm.setChatId(ctx.chatId());
+                    try {
+                        sender.execute(sm);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                }).build();
 	}
+
+	public Mission getCurrentMission(MessageContext ctx){
+        Mission m = null;
+	    Agent a = agentRepository.findByTelegram(ctx.user().getId());
+        m = missionRepository.findActiveByResponsible(a).orElse(null);
+        if(m == null){
+            Team t = teamRepository.findActiveByAgent(a).orElse(null);
+            if(t == null){
+                return null;
+            }
+            m = t.getMission();
+        }
+        return m;
+    }
+
 
 	public Ability showMissions() {
 		return Ability.builder()
-				.name("showmissions")
-				.info("Show missions you're assigned to.")
+				.name("showcurrent")
+				.info("Show mission you're assigned to.")
 				.locality(Locality.USER)
 				.privacy(Privacy.PUBLIC)
 				.action(ctx -> {
-					int id = agentRepository.findByTelegram(ctx.user().getId()).getId();
-					List<Team> teams = teamRepository.findAllByAgent(agentRepository.findById(id));
-                    for (Team t : teams) {
-                    	if(!t.getMission().getStatus().equals("Выполнена"))
-		                    silent.send(""+t.getMission().getId(), ctx.chatId());
-                    }
+
+                    Mission m = getCurrentMission(ctx);
+                    if(m != null)
+                        silent.send(showMissionDetails(m), ctx.chatId());
+					else
+                        silent.send("You are not assigned to any mission currently", ctx.chatId());
 				}).build();
 	}
-	
+
+	public String showMissionDetails(Mission mission){
+        return String.format("ID: %s\nTYPE: %s\nDESCRIPTION: %s\nSTATUS: %s\nRESPONSIBLE: %s\n",
+                mission.getId(),
+                mission.getType().getName(),
+                mission.getDescription(),
+                mission.getStatus(),
+                mission.getResponsible().getName());
+    }
+
 	public Ability showMission() {
 		return Ability.builder()
-			.name("showmission")
-			.info("Shows information about mission")
-			.locality(Locality.USER)
-			.input(1)
-			.privacy(Privacy.PUBLIC).action(ctx -> {
-			    Mission mission = null;
-				try {
-                    mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
-				}
-				catch(Exception e) {
-					silent.send("Error while getting mission from DB", ctx.chatId());
-				}
-				String msg = String.format("ID: %s\nTYPE: %s\nDESCRIPTION: %s\nSTATUS: %s\nRESPONSIBLE: %s\n", 
-						mission.getId(), 
-						mission.getType().getName(),
-						mission.getDescription(), 
-						mission.getStatus(), 
-						mission.getResponsible().getName());
-				silent.send(msg, ctx.chatId());
-			}).build();
+                .name("showmission")
+                .info("Shows information about mission")
+                .locality(Locality.USER)
+                .input(1)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> {
+                    Mission mission = null;
+                    try {
+                        mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
+                    } catch(Exception e) {
+                        silent.send("Error while getting mission from DB", ctx.chatId());
+                        return;
+                    }
+
+
+
+
+                    SendMessage sm = new SendMessage();
+
+                    ReplyKeyboardMarkup rk = new ReplyKeyboardMarkup();
+                    List<KeyboardRow> bs = new ArrayList<>();
+                    KeyboardRow kr = new KeyboardRow();
+
+                    KeyboardButton kb = new KeyboardButton();
+                    kb.setText(String.format("/getmission %d", mission.getId()));
+                    if(getCurrentMission(ctx) == null){
+                        kr.add(kb);
+                    }
+                    bs.add(kr);
+                    rk.setKeyboard(bs);
+                    rk.setOneTimeKeyboard(true);
+                    rk.setResizeKeyboard(true);
+                    sm.setReplyMarkup(rk);
+                    sm.setText(showMissionDetails(mission));
+                    sm.setChatId(ctx.chatId());
+
+                    try {
+                        sender.execute(sm);
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+
+			    }).build();
 	}
 	
 	public Ability setStatus() {
-		return Ability.builder().name("setstatus").locality(Locality.USER)
+		return Ability.builder()
+                .name("setstatus")
+                .locality(Locality.USER)
+                .input(1)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
-                    Mission mission = null;
-					try {
-						mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
+                    Mission mission = getCurrentMission(ctx);
+                    if(mission == null){
+                        silent.send("Not on a mission", ctx.chatId());
                     }
-                    catch(Exception e) {
-                        silent.send("Error while getting mission from DB", ctx.chatId());
-                    }
-                    if(mission == null)
-                        return;
-					mission.setStatus(ctx.secondArg());
+					mission.setStatus(ctx.firstArg());
 					missionRepository.save(mission);
+					silent.send(String.format("Status changed to %s", ctx.firstArg()), ctx.chatId());
 				}).build();
 	}
 	
@@ -189,9 +264,14 @@ public class SepoBot extends AbilityBot {
 		return Ability.builder().name("getmission")
 				.info("Assign yourself for the mission")
 				.locality(Locality.USER)
+				.input(1)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 				    Agent agent = null;
 				    Mission mission = null;
+                    if(getCurrentMission(ctx) != null){
+                        silent.send("Already on a mission, see /showcurrent", ctx.chatId());
+                        return;
+                    }
 					try {
 						agent = agentRepository.findByTelegram(ctx.user().getId());
 						mission = missionRepository.findById(Integer.parseInt(ctx.firstArg()));
@@ -217,6 +297,8 @@ public class SepoBot extends AbilityBot {
                         }
                     } catch(Exception e){
 						silent.send("Internal error", ctx.chatId());
+						silent.send(e.getMessage(), ctx.chatId());
+						throw e;
 					}
 				}).build();
 	}
@@ -226,37 +308,22 @@ public class SepoBot extends AbilityBot {
                 .name("requestsupport")
                 .info("Request soldiers for your current mission")
                 .locality(Locality.USER)
-				.privacy(Privacy.PUBLIC).action(ctx -> {
-				    Mission m = null;
-				    Agent a = agentRepository.findByTelegram(ctx.user().getId());
-				    m = missionRepository.findActiveByResponsible(a).orElse(null);
+				.input(1)
+                .privacy(Privacy.PUBLIC)
+                .action(ctx -> {
+				    Mission m = getCurrentMission(ctx);
 				    if(m == null){
-                        Team t = teamRepository.findActiveByAgent(a).orElse(null);
-                        if(t == null){
-                            silent.send("You are currently not on a mission", ctx.chatId());
-                            return;
-                        }
-                        m = t.getMission();
-				    }
+				        silent.send("Not on a mission", ctx.chatId());
+				        return;
+                    }
 
-					if(ctx.secondArg() == null || ctx.secondArg().isEmpty()){
-						silent.send("Soldiers count not specified", ctx.chatId());
-					}
                     SupportRequest r = new SupportRequest(m, null, Integer.parseInt(ctx.secondArg()), null, null);
                     supportRequestRepository.save(r);
-					silent.send(String.format("Requested %s soldiers for mission %s", ctx.secondArg(), ctx.firstArg()), ctx.chatId());
+					silent.send(String.format("Requested %s soldiers for mission %s", ctx.firstArg(), m.getId()), ctx.chatId());
 				}).build();
 	}
 	
-	public Ability requestEquipment() {
-		return Ability.builder().name("requestequipment").locality(Locality.USER)
-				.privacy(Privacy.PUBLIC).action(ctx -> {
-
-
-				}).build();
-	}
-	
-	public Ability assign() {
+	/*public Ability assign() {
 		return Ability.builder().name("assign").locality(Locality.USER)
 				.privacy(Privacy.PUBLIC).action(ctx -> {
 
@@ -286,21 +353,5 @@ public class SepoBot extends AbilityBot {
 						silent.send("Internal error", ctx.chatId());
 					}
 				}).build();
-	}
-
-	public Ability approveRequest() {
-		return Ability.builder().name("approverequest").locality(Locality.USER)
-				.privacy(Privacy.PUBLIC).action(ctx -> {
-
-
-				}).build();
-	}
-
-	public Ability denyRequest() {
-		return Ability.builder().name("denyrequest").locality(Locality.USER)
-				.privacy(Privacy.PUBLIC).action(ctx -> {
-
-
-				}).build();
-	}
+	}*/
 }

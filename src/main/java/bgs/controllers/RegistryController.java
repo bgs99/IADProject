@@ -46,6 +46,11 @@ public class RegistryController {
         }
     }
 
+    /**
+     * Returns 10 active persons from registry
+     * @param page Page index
+     * @return List of registry info
+     */
     @RequestMapping("/registry/people")
     public List<Registry> getPeople(@RequestParam(value = "page", defaultValue = "0") int page){
         List<Registry> ret = new ArrayList<>();
@@ -64,6 +69,11 @@ public class RegistryController {
         return ret;
     }
 
+    /**
+     * Returns 10 active organisations from registry
+     * @param page Page index
+     * @return List of registry info
+     */
     @RequestMapping("/registry/org")
     public List<Registry> getOrganisations(@RequestParam(value = "page", defaultValue = "0") int page){
         List<Registry> ret = new ArrayList<>();
@@ -81,6 +91,12 @@ public class RegistryController {
         }
         return ret;
     }
+
+    /**
+     * Mark person as target
+     * @param id Person passport
+     * @return success
+     */
     @RequestMapping(path = "/registry/people/target", method = RequestMethod.POST)
     public boolean setTargetPerson(@RequestParam(value = "id") int id){
         Person p = people.findById(id);
@@ -90,6 +106,12 @@ public class RegistryController {
         targets.save(t);
         return true;
     }
+
+    /**
+     * Mark organisation as target
+     * @param id Organisation ID
+     * @return success
+     */
     @RequestMapping(path = "/registry/org/target", method = RequestMethod.POST)
     public boolean setTargetOrganisation(@RequestParam(value = "id") int id){
         Organisation p = organisations.findById(id);
