@@ -30,6 +30,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         defaultWebSecurityExpressionHandler.setRoleHierarchy(roleHierarchy());
         return defaultWebSecurityExpressionHandler;
     }
+
+    /*@Bean
+    public CorsConfigurationSource corsConfigurationSource(){
+        final CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "PUT", "DELETE", "POST"));
+        configuration.setAllowCredentials(true);
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }*/
+
     @Bean
     public RoleHierarchy roleHierarchy(){
         return new CustomRoles();
@@ -84,6 +97,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                //.addFilter(new CorsFilter(corsConfigurationSource()))
                 .csrf().disable()
                 .exceptionHandling()
                 .and()
