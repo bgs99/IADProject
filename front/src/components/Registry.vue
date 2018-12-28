@@ -6,7 +6,6 @@
 </template>
 
 <script>
-  import axios from 'axios'
   import Person from "./Person";
 
   export default {
@@ -16,36 +15,16 @@
     src: {
       type: String,
       default: 'location'
-    },
-    mid: {
-      type: Number,
-      default: 0
     }
   },
-  methods: {
-    loadLocation: function () {
-      axios('/place/locals', {
-        params: {
-          id: this.loc
-        },
-        method: 'GET'
-      }).then(response => {
-        this.list = response.data
-      }).catch(error => {
-        console.log(error)
-      })
+  computed: {
+    list () {
+      return this.$store.getters.people;
     }
   },
   beforeMount () {
     if(this.src === 'location') {
-      this.loc = this.mid
-      this.loadLocation()
-    }
-  },
-  data () {
-    return {
-      list: [],
-      loc: 0
+      this.$store.dispatch('loadPeopleByLocation');
     }
   }
 }

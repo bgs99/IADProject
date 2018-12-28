@@ -1,14 +1,9 @@
 <template>
-  <table>
-    <col width="80%">
-    <col width="20%">
-    <tr>
-      <td>
-        <img src="~@/assets/map.png" width="100%">
-      </td>
-      <td>
-        <div>Statistics</div>
-        <div>{{map.name}}</div>
+  <div class="map-root">
+      <img class="map" src="~@/assets/map.png" width="100%">
+      <div class="info">
+        <div align="center">Statistics</div>
+        <div align="center">{{map.name}}</div>
         Parent: <input type="button" v-if="map.parentId != null"
                        :value="map.parentName" @click="load(map.parentId)">
         <div>Danger: {{map.danger}}</div>
@@ -19,53 +14,35 @@
         <div style="overflow: auto">
           <input type="button" v-for="unit in map.units" :value="unit.second" @click="setCur(unit.first)" :key="unit.first">
         </div>
-      </td>
-    </tr>
-  </table>
+      </div>
+  </div>
 </template>
 
 <script>
-  import axios from 'axios'
-
   export default {
-  name: 'Map',
-  props: {
-    mid: {
-      type: Number,
-      default: 0
-    }
-  },
-  methods: {
-    setCur: function (val) {
-      this.cur = val;
-      this.load()
+    name: 'Map',
+    props: {
+      mid: {
+        type: Number,
+        default: 0
+      }
     },
-    load: function () {
-      axios('/place', {
-        params: {
-          id: this.cur
-        },
-        method: 'GET'
-      }).then(response => {
-        this.map = response.data
-      }).catch(error => {
-        console.log(error)
-      })
+    methods: {
+      setCur: function (val) {
+        this.$store.dispatch('changeMap', val);
+      },
+      people () {
+        this.$emit('people', this.cur)
+      }
     },
-    people () {
-      this.$emit('people', this.cur)
+    computed: {
+      map () {
+        return this.$store.getters.map;
+      }
+    },
+    beforeMount () {
+      this.$store.dispatch('loadMap');
     }
-  },
-  beforeMount () {
-    this.cur = this.mid;
-    this.load()
-  },
-  data () {
-    return {
-      cur: 0,
-      map: {}
-    }
-  }
 }
 </script>
 
@@ -74,5 +51,17 @@
   input[type="button"] {
     white-space: normal;
     width: 90%;
+  }
+</style>
+
+<style scoped>
+  .map-root {
+    display: grid;
+  }
+  .map-root {
+    grid-template-columns: 80% 20%;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "map info";
   }
 </style>

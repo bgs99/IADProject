@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="app-root">
     <div class="tab">
       <button class="tablinks" @click="state = 'Map'">Map</button>
       <button class="tablinks" >Personnel</button>
@@ -10,8 +10,10 @@
       <button class="tablinks" >Requests</button>
       <button class="tablinks" >Logout</button>
     </div>
-    <Map :mid="mid" v-if="state === 'Map'" @people="mapPeople"></Map>
-    <Registry v-else-if="state === 'Registry'" :src="rsrc" :mid="mid" @map="state = 'Map'"></Registry>
+    <div class="app-content">
+      <Map :mid="mid" v-if="state === 'Map'" @people="mapPeople"></Map>
+      <Registry v-else-if="state === 'Registry'" :src="rsrc" :mid="mid" @map="state = 'Map'"></Registry>
+    </div>
   </div>
 </template>
 
@@ -26,16 +28,14 @@
     Registry
   },
   methods: {
-    mapPeople (event) {
+    mapPeople () {
       this.state = 'Registry'
-      this.mid = event
       this.rsrc = 'location'
     }
   },
   data () {
     return {
       state: 'Map',
-      mid: 0,
       rsrc: 'location'
     }
   }
@@ -66,4 +66,14 @@
   .tab button.active {
     background-color: #ccc;
   }
+
+  .app-root {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: max-content auto;
+    grid-template-areas:
+      "tab"
+      "app-content";
+  }
+
 </style>

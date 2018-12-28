@@ -1,41 +1,26 @@
 <template>
-
   <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 40%">
-    <table>
-      <tr>
-        <td>
-          <img src="~@/assets/logo.png" width="150" height="150">
-        </td>
-        <td>
-          <h1>
-            {{name}}
-          </h1>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          #{{pid}}
-        </td>
-        <td>
-          Danger level
-          {{danger}}
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td>
-          Location: <input type="button" :value="loc.name" @click="map"/>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td>
-          Status: Alive
-        </td>
-      </tr>
-    </table>
+    <div class="person-root">
+      <img class="person-img" src="~@/assets/logo.png" width="150" height="150">
+      <div  class="person-info">
+        <h1>
+          #{{src.id}} {{src.name}}
+        </h1>
+        <p>
+          Danger level {{src.danger}}
+        </p>
+        <p>
+          Location: <input type="button" :value="src.location.second" @click="map"/>
+        </p>
+        <p>
+          Status: {{src.status ? 'Alive' : 'Dead'}}
+        </p>
+      </div>
 
+      <div class="person-id">
 
+      </div>
+    </div>
   </div>
 </template>
 
@@ -45,21 +30,7 @@
   props: ['src'],
   methods: {
     map: function () {
-      this.$emit('map', this.loc.id)
-    }
-  },
-  beforeMount () {
-    this.name = this.src.name
-    this.pid = this.src.id
-    this.danger = this.src.danger
-    this.loc = this.src.location
-  },
-  data () {
-    return {
-      name,
-      pid,
-      danger,
-      loc
+      this.$emit('map', this.src.location.first)
     }
   }
 }
@@ -70,5 +41,13 @@
   input[type="button"] {
     white-space: normal;
     width: 90%;
+  }
+  .person-root {
+    display: grid;
+    grid-template-columns: min-content auto;
+    grid-template-rows: min-content auto;
+    grid-template-areas:
+      "person-img person-info"
+      "none       person-info";
   }
 </style>
