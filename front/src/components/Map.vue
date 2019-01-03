@@ -4,15 +4,24 @@
       <div class="info">
         <div align="center">Statistics</div>
         <div align="center">{{map.name}}</div>
-        Parent: <input type="button" v-if="map.parentId != null"
-                       :value="map.parentName" @click="load(map.parentId)">
+        Parent: <router-link tag="button" v-if="map.parentId != null" :to="`/map/${map.parentId}`">
+        {{map.parentName}}
+        </router-link>
         <div>Danger: {{map.danger}}</div>
-        <input type="button" :value="'Population(' + map.population + ')'" @click="people">
-        <input type="button" :value="'Agents(' + map.cops + ')'">
-        <input type="button" :value="'Targets(' + map.targets + ')'">
+        <router-link tag="button" :to="`/people/location/${map.id}`">
+          {{'Population(' + map.population + ')'}}
+        </router-link><br>
+        <router-link tag="button" :to="''">
+          {{'Agents(' + map.cops + ')'}}
+        </router-link><br>
+        <router-link tag="button" :to="''">
+          {{'Targets(' + map.targets + ')'}}
+        </router-link><br>
         <div>Units</div>
         <div style="overflow: auto">
-          <input type="button" v-for="unit in map.units" :value="unit.second" @click="setCur(unit.first)" :key="unit.first">
+          <router-link tag="button" v-for="unit in map.units"  :to="`/map/${unit.first}`" :key="unit.first">
+            {{unit.second}}
+          </router-link>
         </div>
       </div>
   </div>
@@ -21,27 +30,21 @@
 <script>
   export default {
     name: 'Map',
-    props: {
-      mid: {
-        type: Number,
-        default: 0
-      }
-    },
-    methods: {
-      setCur: function (val) {
-        this.$store.dispatch('changeMap', val);
-      },
-      people () {
-        this.$emit('people', this.cur)
-      }
-    },
     computed: {
       map () {
         return this.$store.getters.map;
       }
     },
-    beforeMount () {
-      this.$store.dispatch('loadMap');
+    created () {
+      this.fetchData()
+    },
+    watch: {
+      '$route': 'fetchData'
+    },
+    methods: {
+      fetchData () {
+        this.$store.dispatch('changeMap', this.$route.params.id);
+      }
     }
 }
 </script>

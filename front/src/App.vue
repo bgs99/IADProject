@@ -1,19 +1,16 @@
 <template>
   <div id="app" class="app-root">
     <div class="tab">
-      <button class="tablinks" @click="state = 'Map'">Map</button>
-      <button class="tablinks" >Personnel</button>
-      <button class="tablinks" >Targets</button>
-      <button class="tablinks" >Equipment</button>
-      <button class="tablinks" >Missions</button>
-      <button class="tablinks" @click="state = 'Registry'">Registry</button>
-      <button class="tablinks" >Requests</button>
-      <button class="tablinks" >Logout</button>
+      <router-link tag="button" class="tablinks" to="/map">Map</router-link>
+      <router-link tag="button" class="tablinks" to="/map">Personnel</router-link>
+      <router-link tag="button" class="tablinks" to="/map">Targets</router-link>
+      <router-link tag="button" class="tablinks" to="/map">Equipment</router-link>
+      <router-link tag="button" class="tablinks" to="/map">Missions</router-link>
+      <router-link tag="button" class="tablinks" to="/people">Registry</router-link>
+      <router-link tag="button" class="tablinks" to="/map">Requests</router-link>
+      <router-link tag="button" class="tablinks" to="/map">Logout</router-link>
     </div>
-    <div class="app-content">
-      <Map :mid="mid" v-if="state === 'Map'" @people="mapPeople"></Map>
-      <Registry v-else-if="state === 'Registry'" :src="rsrc" :mid="mid" @map="state = 'Map'"></Registry>
-    </div>
+    <router-view class="app-content"></router-view>
   </div>
 </template>
 
@@ -26,18 +23,6 @@
   components: {
     Map,
     Registry
-  },
-  methods: {
-    mapPeople () {
-      this.state = 'Registry'
-      this.rsrc = 'location'
-    }
-  },
-  data () {
-    return {
-      state: 'Map',
-      rsrc: 'location'
-    }
   }
 }
 </script>

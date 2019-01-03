@@ -10,13 +10,13 @@ export default new Vuex.Store({
   state: {
     mock: true,
     map: {
-      id: 0
+      id: -1
     },
     people: []
   },
   mutations: {
     setMapId (state, id) {
-      state.map.id = id;
+      state.map = {...state.map, id: id};
     },
     setMap (state, map) {
       state.map = map;
@@ -27,11 +27,13 @@ export default new Vuex.Store({
   },
   actions: {
     changeMap (context, id) {
-      context.commit('setMapId', id);
+      if(context.state.map.id === +id)
+        return;
+      context.commit('setMapId', +id);
       context.dispatch('loadMap');
     },
     loadMap (context) {
-      const id = context.state.map.id;
+      const id = +context.state.map.id;
       axios('/place', {
         params: {
           id: id
@@ -41,7 +43,7 @@ export default new Vuex.Store({
         context.commit('setMap', response.data);
       }).catch(error => {
         if(!context.state.mock) console.log(error);
-        else context.commit('setMap', mmap);
+        else context.commit('setMap', mmap.find(q => q.id === id));
       })
     },
     loadPeopleByLocation (context) {
