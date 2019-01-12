@@ -38,7 +38,7 @@
 </template>
 
 <script>
-  import Danger from "./Danger";
+  import Danger from './Danger';
 
   export default {
     name: 'Agent',
@@ -46,12 +46,13 @@
     props: ['src'],
     computed: {
       admin () {
-        return this.$store.state.user.role === 'admin'
-          && this.$store.state.user.id !== this.src.id
-          && this.$store.state.user.deptId === this.src.deptId;
+        return this.$store.state.user.role === 'admin' &&
+          this.$store.state.user.id !== this.src.id &&
+          this.$store.state.user.deptId === this.src.deptId;
       },
       changedWage () {
-        return !Number.isNaN(+this.salary) && +this.salary !== this.src.salary;
+        return !Number.isNaN(+this.salary) &&
+          +this.salary !== this.src.salary;
       }
     },
     created () {

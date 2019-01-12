@@ -31,7 +31,7 @@
     methods: {
       fetchData () {
         let query = '';
-        switch(this.$route.params.source){
+        switch (this.$route.params.source) {
           case 'location':
             query = 'loadAgentsByLocation';
             break;

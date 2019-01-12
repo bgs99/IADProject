@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import Person from "./Person";
+  import Person from './Person';
 
   export default {
     name: 'Registry',
@@ -31,7 +31,7 @@
     methods: {
       fetchData () {
         let query = '';
-        switch(this.$route.params.source){
+        switch (this.$route.params.source) {
           case 'location':
             query = 'loadPeopleByLocation';
             break;

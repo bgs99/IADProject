@@ -44,8 +44,9 @@ export default new Vuex.Store({
   },
   actions: {
     changeMap (context, id) {
-      if(context.getters.mapId === +id)
+      if (context.getters.mapId === +id) {
         return;
+      }
       context.commit('setMapId', +id);
       context.dispatch('loadMap');
     },
@@ -59,11 +60,13 @@ export default new Vuex.Store({
       }).then(response => {
         context.commit('setMap', response.data);
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
-        else {
+        if (!context.state.mock) {
+          console.log(error);
+        } else {
           const fmap = mmap.find(q => q.id === id);
-          if(fmap !== undefined)
+          if (fmap !== undefined) {
             context.commit('setMap', fmap);
+          }
         }
       })
     },
@@ -77,8 +80,11 @@ export default new Vuex.Store({
       }).then(response => {
         context.commit('setPeople', response.data);
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
-        else context.commit('setPeople', mpeople.filter(q => q.location.first === id));
+        if (!context.state.mock) {
+          console.log(error);
+        } else {
+          context.commit('setPeople', mpeople.filter(q => q.location.first === id));
+        }
       })
     },
     loadAllPeople (context, page) {
@@ -90,8 +96,11 @@ export default new Vuex.Store({
       }).then(response => {
         context.commit('setPeople', response.data);
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
-        else context.commit('setPeople', mpeople);
+        if (!context.state.mock) {
+          console.log(error);
+        } else {
+          context.commit('setPeople', mpeople);
+        }
       })
     },
     loadAgentsByLocation (context) {
@@ -104,8 +113,11 @@ export default new Vuex.Store({
       }).then(response => {
         context.commit('setAgents', response.data);
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
-        else context.commit('setAgents', magents);
+        if (!context.state.mock) {
+          console.log(error);
+        } else {
+          context.commit('setAgents', magents);
+        }
       })
     },
     loadAllAgents (context, page) {
@@ -117,15 +129,19 @@ export default new Vuex.Store({
       }).then(response => {
         context.commit('setAgents', response.data);
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
-        else context.commit('setAgents', magents);
+        if (!context.state.mock) {
+          console.log(error);
+        } else {
+          context.commit('setAgents', magents);
+        }
       })
     },
     updateSalary (context, {id, wage}) {
       const lid = +id;
       const oldWage = context.state.agents.find(q => q.id === lid).salary;
-      if(oldWage === +wage)
+      if (oldWage === +wage) {
         return;
+      }
       axios('/agents/wage/set', {
         params: {
           id: lid,
@@ -133,7 +149,9 @@ export default new Vuex.Store({
         },
         method: 'POST'
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
+        if (!context.state.mock) {
+          console.log(error);
+        }
       });
       context.commit('setSalary', {id: lid, wage: +wage});
     },
@@ -145,7 +163,9 @@ export default new Vuex.Store({
         },
         method: 'POST'
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
+        if (!context.state.mock) {
+          console.log(error);
+        }
       });
       context.commit('rank', {id: lid, d: +1});
     },
@@ -157,7 +177,9 @@ export default new Vuex.Store({
         },
         method: 'POST'
       }).catch(error => {
-        if(!context.state.mock) console.log(error);
+        if (!context.state.mock) {
+          console.log(error);
+        }
       });
       context.commit('rank', {id: lid, d: -1});
     }

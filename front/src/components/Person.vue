@@ -27,7 +27,7 @@
 </template>
 
 <script>
-  import Danger from "./Danger";
+  import Danger from './Danger';
 
   export default {
   name: 'Person',

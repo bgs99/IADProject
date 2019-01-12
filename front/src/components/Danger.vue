@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: "Danger",
+    name: 'Danger',
     props: {
       val: Number
     }
