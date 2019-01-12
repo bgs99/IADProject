@@ -61,7 +61,7 @@ public class RegistryController {
                 skip--;
                 continue;
             }
-            if(take < 0)
+            if(take <= 0)
                 break;
             take--;
             ret.add(new Registry(p, missions.countFinishedByPerson(p) == 0));
@@ -84,7 +84,7 @@ public class RegistryController {
                 skip--;
                 continue;
             }
-            if(take < 0)
+            if(take <= 0)
                 break;
             take--;
             ret.add(new Registry(o, missions.countFinishedByOrganisation(o)==0));

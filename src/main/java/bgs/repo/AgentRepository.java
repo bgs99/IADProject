@@ -1,4 +1,5 @@
 package bgs.repo;
+
 import bgs.model.Agent;
 import bgs.model.Dept;
 import bgs.model.Person;
@@ -25,6 +26,9 @@ public interface AgentRepository extends CrudRepository<Agent, Integer> {
 
     @Query("SELECT a from Agent as a join a.passport as b where b.location = ?1 and a.level <= ?2")
     List<Agent> findAllByLocationAndLevel(Place location, int level);
+
+    List<Agent> findAllByLevelLessThanEqual(int level);
+
 
     @Query("select b from Agent as a join a.passport as b where b.location = ?1 and a.level <= ?2")
     List<Person> selectPeopleFromLocationAndLevel(Place location, int level);

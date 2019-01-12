@@ -2,6 +2,7 @@ package bgs.controllers;
 
 import bgs.model.Agent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class EmailService {
     @Autowired
+    Environment env;
+    @Autowired
     private JavaMailSender javaMailSender;
     public void sendMail(String subject, Agent to, String text){
         SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
@@ -18,7 +21,8 @@ public class EmailService {
         simpleMailMessage.setFrom("bgs99c@gmail.com");
         simpleMailMessage.setTo(to.getEmail());
         simpleMailMessage.setText(text);
-        javaMailSender.send(simpleMailMessage);
+        if(env.getProperty("MAIL")!=null)
+            javaMailSender.send(simpleMailMessage);
     }
     public void sendMail(String subject, String from, String to, String text){
         SimpleMailMessage simpleMailMessage=new SimpleMailMessage();
@@ -26,7 +30,8 @@ public class EmailService {
         simpleMailMessage.setFrom(from);
         simpleMailMessage.setTo(to);
         simpleMailMessage.setText(text);
-        javaMailSender.send(simpleMailMessage);
+        if(env.getProperty("MAIL")!=null)
+            javaMailSender.send(simpleMailMessage);
     }
     @RequestMapping(path = "/mail", method = RequestMethod.POST)
     public String testMail(){

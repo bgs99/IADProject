@@ -7,10 +7,12 @@
           #{{src.id}} {{src.name}}
         </h1>
         <p>
-          Danger level {{src.danger}}
+          Danger level <Danger :val="src.danger"></Danger>
         </p>
         <p>
-          Location: <input type="button" :value="src.location.second" @click="map"/>
+          Location: <router-link tag="button" :to="`/map/${src.location.first}`">
+          {{src.location.second}}
+        </router-link>
         </p>
         <p>
           Status: {{src.status ? 'Alive' : 'Dead'}}
@@ -25,20 +27,18 @@
 </template>
 
 <script>
+  import Danger from "./Danger";
+
   export default {
   name: 'Person',
-  props: ['src'],
-  methods: {
-    map: function () {
-      this.$emit('map', this.src.location.first)
-    }
-  }
+    components: {Danger},
+    props: ['src']
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  input[type="button"] {
+  router-link {
     white-space: normal;
     width: 90%;
   }

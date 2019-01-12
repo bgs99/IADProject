@@ -7,11 +7,12 @@
         Parent: <router-link tag="button" v-if="map.parentId != null" :to="`/map/${map.parentId}`">
         {{map.parentName}}
         </router-link>
-        <div>Danger: {{map.danger}}</div>
+        <button disabled v-else>None</button>
+        <div>Danger: <Danger :val="map.danger"></Danger></div>
         <router-link tag="button" :to="`/people/location/${map.id}`">
           {{'Population(' + map.population + ')'}}
         </router-link><br>
-        <router-link tag="button" :to="''">
+        <router-link tag="button" :to="`/agents/location/${map.id}`">
           {{'Agents(' + map.cops + ')'}}
         </router-link><br>
         <router-link tag="button" :to="''">
@@ -28,8 +29,11 @@
 </template>
 
 <script>
+  import Danger from "./Danger";
+
   export default {
     name: 'Map',
+    components: {Danger},
     computed: {
       map () {
         return this.$store.getters.map;
@@ -43,7 +47,7 @@
     },
     methods: {
       fetchData () {
-        this.$store.dispatch('changeMap', this.$route.params.id);
+        this.$store.dispatch('changeMap', this.$route.params.id).then();
       }
     }
 }
@@ -51,7 +55,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  input[type="button"] {
+  router-link {
     white-space: normal;
     width: 90%;
   }

@@ -1,13 +1,17 @@
 package bgs.controllers;
 
+import bgs.info.AgentInfo;
 import bgs.model.Agent;
 import bgs.model.Dept;
 import bgs.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.stream.Stream;
 
 @RestController
 public class AgentController {
@@ -26,6 +30,8 @@ public class AgentController {
     @Autowired
     EmailService mail;
 
+    private static RequestMethod rm = RequestMethod.GET;
+
     @RequestMapping("/dept")
     public String showDept(){
         return manager.getJob(manager.getCurrentAgent()).toString();
@@ -39,6 +45,13 @@ public class AgentController {
     @RequestMapping("/agents/wage")
     public int getWage(@RequestParam("id") int id){
         return agents.findById(id).getPayment();
+    }
+
+    @Transactional
+    @RequestMapping("/agents")
+    public Stream<AgentInfo> listAgents(@RequestParam(name = "page", defaultValue = "0") int page){
+        int level = manager.getLevel();
+        return agents.findAllByLevelLessThanEqual(level).stream().skip(page*10).limit(10).map(AgentInfo::new);
     }
 
     /**
@@ -64,7 +77,7 @@ public class AgentController {
      * @param id ID of an agent
      * @return success
      */
-    @RequestMapping(path = "/agents/promote", method = RequestMethod.POST)
+    @RequestMapping(path = "/agents/promote", method = RequestMethod.GET)
     public boolean promote(@RequestParam("id") int id){
 
         Agent a = agents.findById(id);

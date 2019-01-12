@@ -17,7 +17,7 @@ public class AgentInfo{
     public AgentInfo(Agent agent){
         Person p = agent.getPassport();
         id = agent.getId();
-        name = p.toString();
+        name = p.getName();
         Dept d = agent.getDept();
         deptName = d.toString();
         deptId = d.getId();

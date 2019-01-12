@@ -1,16 +1,16 @@
 <template>
 
   <div>
-    <Person v-for="person in list" :key="person.id" :src="person" @map="$emit('map',$event)"></Person>
+    <Agent v-for="agent in list" :key="agent.id" :src="agent"></Agent>
   </div>
 </template>
 
 <script>
-  import Person from "./Person";
+  import Agent from './Agent';
 
   export default {
-    name: 'Registry',
-    components: {Person},
+    name: 'Personnel',
+    components: {Agent},
     props: {
       src: {
         type: String,
@@ -19,7 +19,7 @@
     },
     computed: {
       list () {
-        return this.$store.getters.people;
+        return this.$store.getters.agents;
       }
     },
     created () {
@@ -33,11 +33,11 @@
         let query = '';
         switch(this.$route.params.source){
           case 'location':
-            query = 'loadPeopleByLocation';
+            query = 'loadAgentsByLocation';
             break;
           case 'page':
           default:
-            query = 'loadAllPeople';
+            query = 'loadAllAgents';
             break;
         }
         this.$store.dispatch(query, this.$route.params.id).then();
