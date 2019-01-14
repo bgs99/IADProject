@@ -1,8 +1,8 @@
 <template>
   <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 40%">
     <div class="person-root">
-      <img class="person-img" src="~@/assets/logo.png" width="150" height="150">
-      <div class="person-info">
+      <img style="grid-area: person-img" src="~@/assets/logo.png" width="150" height="150">
+      <div style="grid-area: person-info">
         <h1>
           #{{src.id}} {{src.name}}
         </h1>
@@ -30,7 +30,7 @@
   import Danger from './Danger';
 
   export default {
-  name: 'Person',
+  name: 'People',
     components: {Danger},
     props: ['src']
 }

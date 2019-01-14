@@ -1,16 +1,16 @@
 <template>
   <div id="app" class="app-root">
-    <div class="tab">
+    <div class="tab" style="grid-area: tab">
       <router-link tag="button" class="tablinks" :to="`/map/${this.$store.getters.mapId}`">Map</router-link>
       <router-link tag="button" class="tablinks" to="/agents/page/0">Personnel</router-link>
       <router-link tag="button" class="tablinks" to="/map">Targets</router-link>
       <router-link tag="button" class="tablinks" to="/map">Equipment</router-link>
-      <router-link tag="button" class="tablinks" to="/map">Missions</router-link>
+      <router-link tag="button" class="tablinks" to="/missions/page/0">Missions</router-link>
       <router-link tag="button" class="tablinks" to="/people/page/0">Registry</router-link>
       <router-link tag="button" class="tablinks" to="/map">Requests</router-link>
       <router-link tag="button" class="tablinks" to="/map">Logout</router-link>
     </div>
-    <router-view class="app-content"></router-view>
+    <router-view style="grid-area: app-content"></router-view>
   </div>
 </template>
 

@@ -1,8 +1,8 @@
 <template>
   <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 40%">
     <div class="agent-root">
-      <img class="agent-img" src="~@/assets/logo.png" width="150" height="150">
-      <div class="agent-info">
+      <img style="grid-area: agent-img" src="~@/assets/logo.png" width="150" height="150">
+      <div style="grid-area: agent-info">
         <h1>
           #{{src.id}} {{src.name}}{{src.id === $store.state.user.id ? ', you' : ''}}
         </h1>
@@ -82,10 +82,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  router-link {
-    white-space: normal;
-    width: 90%;
-  }
   .agent-root {
     display: grid;
     grid-template-columns: min-content auto;

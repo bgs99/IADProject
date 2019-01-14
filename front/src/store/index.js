@@ -4,12 +4,13 @@ import axios from 'axios'
 import mmap from './mock/mmap'
 import mpeople from './mock/mpeople'
 import magents from './mock/magents'
+import mmissions from './mock/mmissions'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    mock: false,
+    mock: true,
     map: {
       id: -1
     },
@@ -20,23 +21,30 @@ export default new Vuex.Store({
       id: 16,
       level: 5,
       deptId: 28
-    }
+    },
+    missions: []
   },
   mutations: {
     setMapId (state, id) {
-      state.map = {...state.map, id: id}
+      state.map = {
+        ...state.map,
+        id: id
+      };
     },
     setMap (state, map) {
-      state.map = map
+      state.map = map;
     },
     setPeople (state, list) {
-      state.people = list
+      state.people = list;
     },
     setAgents (state, list) {
-      state.agents = list
+      state.agents = list;
+    },
+    setMissions (state, list) {
+      state.missions = list;
     },
     setSalary (state, {id, wage}) {
-      state.agents.find(q => q.id === id).salary = wage
+      state.agents.find(q => q.id === id).salary = wage;
     },
     rank (state, {id, d}) {
       state.agents.find(q => q.id === id).level += d;
@@ -87,7 +95,7 @@ export default new Vuex.Store({
         }
       })
     },
-    loadAllPeople (context, page) {
+    loadPeopleByPage (context, page) {
       axios('/registry/people', {
         params: {
           page: page
@@ -120,7 +128,7 @@ export default new Vuex.Store({
         }
       })
     },
-    loadAllAgents (context, page) {
+    loadAgentsByPage (context, page) {
       axios('/agents', {
         params: {
           page: page
@@ -133,6 +141,22 @@ export default new Vuex.Store({
           console.log(error);
         } else {
           context.commit('setAgents', magents);
+        }
+      })
+    },
+    loadMissionsByPage (context, page) {
+      axios('/missions', {
+        params: {
+          page: page
+        },
+        method: 'GET'
+      }).then(response => {
+        context.commit('setMissions', response.data);
+      }).catch(error => {
+        if (!context.state.mock) {
+          console.log(error);
+        } else {
+          context.commit('setMissions', mmissions);
         }
       })
     },
@@ -188,6 +212,7 @@ export default new Vuex.Store({
     map: state => state.map,
     mapId: state => state.map.id,
     people: state => state.people,
-    agents: state => state.agents
+    agents: state => state.agents,
+    missions: state => state.missions
   }
 });

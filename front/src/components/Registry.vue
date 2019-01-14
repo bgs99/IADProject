@@ -1,25 +1,25 @@
 <template>
 
   <div>
-    <Person v-for="person in list" :key="person.id" :src="person" @map="$emit('map',$event)"></Person>
+    <component :is="comp" v-for="el in list" :key="el.id" :src="el"></component>
   </div>
 </template>
 
 <script>
-  import Person from './Person';
+  import People from './People';
+  import Agents from './Agents';
+  import Missions from './Missions'
 
   export default {
     name: 'Registry',
-    components: {Person},
-    props: {
-      src: {
-        type: String,
-        default: 'location'
-      }
+    components: {
+      People,
+      Agents,
+      Missions
     },
     computed: {
       list () {
-        return this.$store.getters.people;
+        return this.$store.getters[this.comp[0].toLowerCase() + this.comp.slice(1)];
       }
     },
     created () {
@@ -30,17 +30,21 @@
     },
     methods: {
       fetchData () {
-        let query = '';
-        switch (this.$route.params.source) {
-          case 'location':
-            query = 'loadPeopleByLocation';
-            break;
-          case 'page':
-          default:
-            query = 'loadAllPeople';
-            break;
+        const col = this.$route.params['collection'];
+        const src = this.$route.params['source'];
+        if (!['agents', 'people', 'missions'].includes(col)) {
+          this.$router.replace('/');
+          return;
         }
-        this.$store.dispatch(query, this.$route.params.id).then();
+        console.log(col);
+        this.comp = col[0].toUpperCase() + col.slice(1);
+        const srcc = src[0].toUpperCase() + src.slice(1);
+        this.$store.dispatch('load' + this.comp + 'By' + srcc, this.$route.params.id).then();
+      }
+    },
+    data () {
+      return {
+        comp: 'div'
       }
     }
 }
