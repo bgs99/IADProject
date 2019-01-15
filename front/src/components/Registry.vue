@@ -8,8 +8,8 @@
 <script>
   import People from './People';
   import Agents from './Agents';
-  import Missions from './Missions'
-  import Targets from './Targets'
+  import Missions from './Missions';
+  import Targets from './Targets';
 
   export default {
     name: 'Registry',
@@ -21,7 +21,7 @@
     },
     computed: {
       list () {
-        return this.$store.state[this.comp[0].toLowerCase() + this.comp.slice(1)];
+        return this.$store.getters[this.comp[0].toLowerCase() + this.comp.slice(1)];
       }
     },
     created () {
