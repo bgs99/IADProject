@@ -1,8 +1,8 @@
 <template>
   <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 40%">
-    <div class="person-root">
-      <img style="grid-area: person-img" src="~@/assets/logo.png" width="150" height="150">
-      <div style="grid-area: person-info">
+    <div class="root">
+      <img style="grid-area: img" src="~@/assets/logo.png" width="150" height="150" v-if="src.isPerson">
+      <div style="grid-area: info">
         <h1>
           #{{src.id}} {{src.name}}
         </h1>
@@ -15,13 +15,10 @@
         </router-link>
         </p>
         <p>
-          Status: {{src.status ? 'Alive' : 'Dead'}}
+          Status: {{src.active ? 'Active' : 'Neutralized'}}
         </p>
       </div>
-
-      <div class="person-id">
-
-      </div>
+      <router-link tag="button" style="grid-area: mission" :to="`/missions/new/${src.id}`" v-if="src.active">Add mission</router-link>
     </div>
   </div>
 </template>
@@ -30,7 +27,7 @@
   import Danger from './Danger';
 
   export default {
-  name: 'People',
+  name: 'Targets',
     components: {Danger},
     props: ['src']
 }
@@ -38,16 +35,12 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  router-link {
-    white-space: normal;
-    width: 90%;
-  }
-  .person-root {
+  .root {
     display: grid;
     grid-template-columns: min-content auto;
     grid-template-rows: min-content auto;
     grid-template-areas:
-      "person-img person-info"
-      "none       person-info";
+      "img  info"
+      "mission info";
   }
 </style>

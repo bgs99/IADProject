@@ -2,11 +2,10 @@ package bgs.controllers;
 
 import bgs.info.AgentInfo;
 import bgs.info.PlaceInfo;
+import bgs.info.TargetInfo;
+import bgs.model.Organisation;
 import bgs.model.Person;
-import bgs.repo.AgentRepository;
-import bgs.repo.PersonRepository;
-import bgs.repo.PlaceRepository;
-import bgs.repo.TargetRepository;
+import bgs.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,6 +29,8 @@ public class PlaceController {
     PlaceRepository places;
     @Autowired
     PersonRepository people;
+    @Autowired
+    OrganisationRepository orgs;
 
     @RequestMapping("/bcrypt")
     public String getHash(@RequestParam(name = "pass", required=false, defaultValue="password") String pass){
@@ -66,6 +67,10 @@ public class PlaceController {
     public List<Person> getLocals(@RequestParam("id") int id){
         return people.findAllByLocationOrderByDangerDesc(places.findById(id));
     }
+    @RequestMapping("/place/org")
+    public List<Organisation> getOrgs(@RequestParam("id") int id){
+        return orgs.findAllByLocationOrderByDangerDesc(places.findById(id));
+    }
 
     /**
      * Get agents from place
@@ -77,5 +82,8 @@ public class PlaceController {
         int level = manager.getLevel();
         return agents.findAllByLocationAndLevel(places.findById(id), level).stream().map(AgentInfo::new);
     }
-
+    @RequestMapping("/place/locals/targets")
+    public Stream<TargetInfo> getLocalTargets(@RequestParam("id") int id){
+        return Stream.concat(targets.findAllPeopleByLocation(places.findById(id)).stream(), targets.findAllOrgsByLocation(places.findById(id)).stream()).map(TargetInfo::new);
+    }
 }

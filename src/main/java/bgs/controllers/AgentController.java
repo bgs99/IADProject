@@ -49,7 +49,10 @@ public class AgentController {
 
     @Transactional
     @RequestMapping("/agents")
-    public Stream<AgentInfo> listAgents(@RequestParam(name = "page", defaultValue = "0") int page){
+    public Stream<AgentInfo> listAgents(@RequestParam(name = "page", defaultValue = "0") int page,
+                                        @RequestParam(name = "page", defaultValue = "-1") int id){
+        if(id >= 0)
+            return Stream.of(new AgentInfo(agents.findById(id)));
         int level = manager.getLevel();
         return agents.findAllByLevelLessThanEqual(level).stream().skip(page*10).limit(10).map(AgentInfo::new);
     }

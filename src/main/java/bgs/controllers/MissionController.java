@@ -49,7 +49,10 @@ public class MissionController {
      * @return Stream of target info
      */
     @RequestMapping("/targets")
-    public Stream<TargetInfo> getTargets(@RequestParam(value = "page", defaultValue = "0") int page){
+    public Stream<TargetInfo> getTargets(@RequestParam(value = "page", defaultValue = "0") int page,
+                                         @RequestParam(value = "page", defaultValue = "-1") int id){
+        if(id >= 0)
+            return Stream.of(targets.findById(id)).map(TargetInfo::new);
         return targets.findAllActive().stream().skip(page*10).limit(10).map(TargetInfo::new);
     }
 
@@ -59,7 +62,10 @@ public class MissionController {
      * @return Stream of mission info
      */
     @RequestMapping("/missions")
-    public Stream<MissionInfo> getMissions(@RequestParam(value = "page", defaultValue = "0") int page){
+    public Stream<MissionInfo> getMissions(@RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "page", defaultValue = "-1") int id){
+        if(id >= 0)
+            return Stream.of(missions.findById(id)).map(q -> new MissionInfo(q, teams));
         return missions.findUnfinished().stream().skip(page * 10).limit(10).map(q -> new MissionInfo(q, teams));
     }
 

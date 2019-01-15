@@ -9,17 +9,19 @@
   import People from './People';
   import Agents from './Agents';
   import Missions from './Missions'
+  import Targets from './Targets'
 
   export default {
     name: 'Registry',
     components: {
       People,
       Agents,
-      Missions
+      Missions,
+      Targets
     },
     computed: {
       list () {
-        return this.$store.getters[this.comp[0].toLowerCase() + this.comp.slice(1)];
+        return this.$store.state[this.comp[0].toLowerCase() + this.comp.slice(1)];
       }
     },
     created () {
@@ -32,11 +34,10 @@
       fetchData () {
         const col = this.$route.params['collection'];
         const src = this.$route.params['source'];
-        if (!['agents', 'people', 'missions'].includes(col)) {
+        if (!['agents', 'people', 'missions', 'targets'].includes(col)) {
           this.$router.replace('/');
           return;
         }
-        console.log(col);
         this.comp = col[0].toUpperCase() + col.slice(1);
         const srcc = src[0].toUpperCase() + src.slice(1);
         this.$store.dispatch('load' + this.comp + 'By' + srcc, this.$route.params.id).then();

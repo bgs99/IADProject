@@ -1,7 +1,6 @@
 <template>
   <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 90%">
     <div class="mission-root">
-      <img style="grid-area: mission-img" src="~@/assets/logo.png" width="150" height="150">
       <div style="grid-area: mission-target">
         <h1>
           #{{src.id}} {{src.targetName}}
@@ -9,6 +8,9 @@
         <h2>
           {{src.type}}
         </h2>
+        <router-link tag="button" :to="`/targets/id/${src.target.id}`">
+          Go to target
+        </router-link>
         <p>
           Danger level <Danger :val="src.danger"></Danger>
         </p>
@@ -16,6 +18,9 @@
           Location: <router-link tag="button" :to="`/map/${src.location.first}`">
           {{src.location.second}}
         </router-link>
+        </p>
+        <p>
+          {{src.desc}}
         </p>
         <p>
           Status: {{src.status}}
@@ -28,7 +33,9 @@
         <table>
           <tr v-for="ag in src.team" :key="ag.first.id">
             <td>
-              <img :src="`/static/people/${ag.first.name}.jpg`" width="100" height="100"/>
+              <router-link :to="`/agents/id/${ag.first.id}`">
+                <img :src="`/static/people/${ag.first.name}.jpg`" width="100" height="100"/>
+              </router-link>
               <p>
                 #{{ag.first.id}} {{ag.first.name}}
               </p>
@@ -68,10 +75,10 @@
 <style scoped>
   .mission-root {
     display: grid;
-    grid-template-columns: min-content auto 50%;
+    grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
     grid-template-areas:
-      "mission-img  mission-target  mission-target"
-      "mission-team mission-team    mission-transp"
+      "mission-target  mission-target"
+      "mission-team    mission-transp"
   }
 </style>

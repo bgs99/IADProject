@@ -15,7 +15,7 @@
         <router-link tag="button" :to="`/agents/location/${map.id}`">
           {{'Agents(' + map.cops + ')'}}
         </router-link><br>
-        <router-link tag="button" :to="''">
+        <router-link tag="button" :to="`/targets/location/${map.id}`">
           {{'Targets(' + map.targets + ')'}}
         </router-link><br>
         <div>Units</div>
