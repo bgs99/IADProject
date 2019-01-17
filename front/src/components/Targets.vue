@@ -18,7 +18,8 @@
           Status: {{src.active ? 'Active' : 'Neutralized'}}
         </p>
       </div>
-      <router-link tag="button" style="grid-area: mission" :to="`/missions/new/${src.id}`" v-if="src.active">Add mission</router-link>
+      <router-link tag="button" style="grid-area: mission" :to="`/missions/new/${src.id}`"
+                   v-if="src.active && $store.state.currentMission === undefined">Add mission</router-link>
     </div>
   </div>
 </template>

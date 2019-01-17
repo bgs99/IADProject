@@ -1,5 +1,7 @@
 package bgs.controllers;
 
+import bgs.info.TransportInfo;
+import bgs.info.WeaponInfo;
 import bgs.model.Transport;
 import bgs.model.Weapon;
 import bgs.repo.AgentRepository;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.stream.Stream;
 
 @RestController
 public class StorageController {
@@ -38,6 +42,18 @@ public class StorageController {
         weapons.save(w);
     }
 
+    @RequestMapping(path = "/weapons")
+    public Stream<WeaponInfo> listWeapons(@RequestParam(value = "id", defaultValue = "-1") int id){
+        if(id >= 0)
+            return Stream.of(weapons.findById(id)).map(WeaponInfo::new);
+        return weapons.findAll().stream().map(WeaponInfo::new);
+    }
+    @RequestMapping(path = "/transport")
+    public Stream<TransportInfo> listTransport(@RequestParam(value = "id", defaultValue = "-1") int id){
+        if(id >= 0)
+            return Stream.of(transport.findById(id)).map(TransportInfo::new);
+        return transport.findAll().stream().map(TransportInfo::new);
+    }
     /**
      * Order transport
      * @param id Transport ID

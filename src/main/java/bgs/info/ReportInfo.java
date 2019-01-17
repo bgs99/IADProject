@@ -2,22 +2,23 @@ package bgs.info;
 
 
 import bgs.model.Report;
+import org.springframework.data.util.Pair;
 
 public class ReportInfo{
     public int id;
-    public int mission;
+    public Pair<Integer, String> mission;
     public String name;
     public String purpose;
     public String description;
-    public int author;
-    public int subject;
+    public Pair<Integer, String> author;
+    public Pair<Integer, String> subject;
     public ReportInfo(Report report){
         this.id = report.getId();
-        this.mission = report.getMission().getId();
+        this.mission = Pair.of(report.getMission().getId(), new TargetInfo(report.getMission().getTarget()).name);
         this.name = report.getName();
         this.purpose = report.getPurpose();
         this.description = report.getDescription();
-        this.author = report.getAuthor().getId();
-        this.subject = report.getSubject().getId();
+        this.author = Pair.of(report.getAuthor().getId(), report.getAuthor().getName());
+        this.subject = Pair.of(report.getSubject().getId(), report.getSubject().getName());
     }
 }

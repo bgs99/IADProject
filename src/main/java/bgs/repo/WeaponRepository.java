@@ -9,4 +9,5 @@ public interface WeaponRepository extends CrudRepository<Weapon, Integer> {
     Weapon findById(int id);
     @Query("select w from Weapon as w where w.ready > 0")
     List<Weapon> findAllReady();
+    List<Weapon> findAll();
 }

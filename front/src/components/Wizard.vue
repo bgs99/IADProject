@@ -44,7 +44,7 @@
         ]
       },
       target () {
-        return this.$store.state.targets[0];
+        return this.$store.getters.targets[0];
       }
     },
     data () {

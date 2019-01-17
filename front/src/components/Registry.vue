@@ -1,6 +1,12 @@
 <template>
 
   <div>
+    <div class="tab" style="grid-area: tab">
+      <router-link tag="button"
+                   :class="{tablinks: true, active: tab[0].toLowerCase() + tab.slice(1) === $route.params.source}"
+                   v-for="tab in $store.state.tabs" :key="tab"
+                   :to="`/${$route.params.collection}/${tab[0].toLowerCase() + tab.slice(1)}/0`">{{tab}}</router-link>
+    </div>
     <component :is="comp" v-for="el in list" :key="el.id" :src="el"></component>
   </div>
 </template>
@@ -10,6 +16,9 @@
   import Agents from './Agents';
   import Missions from './Missions';
   import Targets from './Targets';
+  import Equipment from './Equipment';
+  import Reports from './Reports';
+  import Requests from './Requests';
 
   export default {
     name: 'Registry',
@@ -17,7 +26,10 @@
       People,
       Agents,
       Missions,
-      Targets
+      Targets,
+      Equipment,
+      Reports,
+      Requests
     },
     computed: {
       list () {
@@ -34,7 +46,7 @@
       fetchData () {
         const col = this.$route.params['collection'];
         const src = this.$route.params['source'];
-        if (!['agents', 'people', 'missions', 'targets'].includes(col)) {
+        if (!['agents', 'people', 'missions', 'targets', 'equipment', 'reports', 'requests'].includes(col)) {
           this.$router.replace('/');
           return;
         }
@@ -53,8 +65,27 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  input[type="button"] {
-    white-space: normal;
-    width: 90%;
+  .tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+  }
+
+  .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+  }
+
+  .tab button:hover {
+    background-color: #ddd;
+  }
+
+  .tab button.active {
+    background-color: #ccc;
   }
 </style>

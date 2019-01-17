@@ -78,17 +78,17 @@ public class MissionController {
      * @return Success
      */
     @RequestMapping(path = "/missions/create", method = RequestMethod.POST)
-    public boolean create(
+    public Integer create(
             @RequestParam("id") int id,
             @RequestParam("level") int level,
             @RequestParam("desc") String description,
             @RequestParam("type") int type){
         Target t = targets.findById(id);
         if(t == null)
-            return false;
+            return null;
         Mission m = new Mission(manager.getCurrentAgent(), t, level, description, types.findById(type));
         missions.save(m);
-        return true;
+        return m.getId();
     }
 
     /**
@@ -104,7 +104,7 @@ public class MissionController {
             @RequestParam("id") int id,
             @RequestParam("weapon") int wp,
             @RequestParam(value = "transport", defaultValue = "-1") int tr,
-            @RequestParam(value = "over", defaultValue = "-1") int cov){
+            @RequestParam(value = "cover", defaultValue = "-1") int cov){
         Mission m = missions.findById(id);
         if(m == null)
             return false;
@@ -232,7 +232,10 @@ public class MissionController {
      * @return Stream of request info
      */
     @RequestMapping("/missions/support/process")
-    public Stream<SupportRequestInfo> getSupportRequests(@RequestParam(name = "page", defaultValue = "0", required = false) int page){
+    public Stream<SupportRequestInfo> getSupportRequests(@RequestParam(name = "page", defaultValue = "-1", required = false) int mission,
+                                                         @RequestParam(name = "page", defaultValue = "0", required = false) int page){
+        if(mission >= 0)
+            return req.findAllByMission(missions.findById(mission)).stream().map(SupportRequestInfo::new);
         return req.findAllBySeenIsFalse().stream().skip(page*10).limit(10).map(SupportRequestInfo::new);
     }
 
@@ -253,8 +256,11 @@ public class MissionController {
      * @return Stream of report info
      */
     @RequestMapping("/missions/reports")
-    public Stream<ReportInfo> getReport(@RequestParam("id") int id){
-        return reportRepository.findAllByMission(missions.findById(id)).stream().map(ReportInfo::new);
+    public Stream<ReportInfo> getReport(@RequestParam(value = "id", defaultValue = "-1") int id,
+                                        @RequestParam(value = "page", defaultValue = "0") int page){
+        if(id >= 0)
+            return reportRepository.findAllByMission(missions.findById(id)).stream().map(ReportInfo::new);
+        return reportRepository.findAll().stream().map(ReportInfo::new).skip(page*10).limit(10);
     }
 
 

@@ -23,6 +23,8 @@ module.exports = {
   rules: {
     semi: 'off',
     indent: 'off',
+    'no-multi-spaces': 'off',
+    'no-multiple-empty-lines': 'off',
     // allow async-await
     'generator-star-spacing': 'off',
     // allow debugger during development
