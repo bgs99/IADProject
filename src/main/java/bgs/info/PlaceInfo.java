@@ -38,6 +38,6 @@ public class PlaceInfo{
         for(Place ps : places.findAllByParent(place)){
             units.add(Pair.of(ps.getId(), ps.getName()));
         }
-        targets = 0;
+        targets = targetsRep.findAllPeopleByLocation(place).size() + targetsRep.findAllOrgsByLocation(place).size();
     }
 }

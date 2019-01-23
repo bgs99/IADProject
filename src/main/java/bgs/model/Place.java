@@ -37,7 +37,7 @@ public class Place implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return name.replace('_', ' ');
     }
 
     public Integer getId() {

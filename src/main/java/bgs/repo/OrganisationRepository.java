@@ -12,4 +12,5 @@ public interface OrganisationRepository extends CrudRepository<Organisation, Int
     @Query("select avg(o.danger) from Organisation as o where o.location = ?1")
     Double getDanger(Place location);
     List<Organisation> findAllByLocationOrderByDangerDesc(Place location);
+    List<Organisation> findAll();
 }

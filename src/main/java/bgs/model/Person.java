@@ -25,12 +25,20 @@ public class Person implements RegistryEntry {
     private byte[] data;
     @Column(name = "ФОТО")
     private String image;
+    private boolean alive;
     protected Person(){}
     @Override
     public String getName(){
         return name + " " + surname;
     }
 
+    public boolean getAlive() {
+        return alive;
+    }
+
+    public void kill() {
+        alive = false;
+    }
     public String getImage() {
         return image;
     }

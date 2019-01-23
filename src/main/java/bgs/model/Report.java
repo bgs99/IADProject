@@ -7,7 +7,10 @@ import java.io.Serializable;
 @Entity
 @Table(name = "ОТЧЕТ")
 public class Report implements Serializable {
-    @Id @GeneratedValue @Column(name = "ИД")
+    @Id
+    @GeneratedValue(generator = "otc")
+    @SequenceGenerator(name = "otc", sequenceName = "otc", allocationSize = 1)
+    @Column(name = "ИД")
     private int id;
     @ManyToOne
     @JoinColumn(name = "МИССИЯ", referencedColumnName = "ИД")

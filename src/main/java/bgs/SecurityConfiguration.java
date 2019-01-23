@@ -103,7 +103,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .expressionHandler(webExpressionHandler())
-                .antMatchers("/*").hasAuthority("USER")
+                .antMatchers("/", "/login", "/logout").permitAll()
+                //.antMatchers("/*").hasAuthority("USER")
                 .antMatchers("/place", "place/**", "/agents/wage").hasAuthority("USER")
                 .antMatchers("/requests/process").hasAuthority("CLERK")
                 .antMatchers("/requests/process").hasAuthority("CLERK")
@@ -114,11 +115,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         "/missions/support/process",
                         "/missions/support/send",
                         "/missions/reports").hasAuthority("CLERK")
-                .antMatchers("/missions/apply").hasAuthority("FIELD")
-                .antMatchers("/missions/update", "/missions/support/apply").hasAnyAuthority("FIELD", "CLERK")
+                .antMatchers("/missions/apply").permitAll()//.hasAuthority("FIELD")
+                .antMatchers("/missions/update", "/missions/support/apply").permitAll()//.hasAnyAuthority("FIELD", "CLERK")
                 .antMatchers("/repairs/weapons/apply").hasAuthority("REPAIR")
-                .and()
-                .formLogin()
                 .and()
                 .logout();
     }

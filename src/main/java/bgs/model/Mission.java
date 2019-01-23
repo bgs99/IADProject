@@ -8,7 +8,10 @@ import java.util.List;
 @Entity
 @Table(name = "МИССИИ")
 public class Mission implements Serializable {
-    @Id @GeneratedValue @Column(name = "ИД")
+    @Id
+    @GeneratedValue(generator = "m")
+    @SequenceGenerator(name = "m", sequenceName = "m", allocationSize = 1)
+    @Column(name = "ИД")
     private int id;
     @ManyToOne
     @JoinColumn(name = "ТИП", referencedColumnName = "ТИП_МИССИИ")

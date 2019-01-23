@@ -7,7 +7,9 @@ import java.io.Serializable;
 @Entity
 @Table(name = "ЦЕЛИ")
 public class Target implements Serializable {
-    @Id @GeneratedValue @Column(name = "ИД")
+    @Id @GeneratedValue(generator = "tg")
+    @SequenceGenerator(name = "tg", sequenceName = "tg", allocationSize = 1)
+    @Column(name = "ИД")
     private int id;
     @JoinColumn(name = "ПЕРСОНА", referencedColumnName = "ПАСПОРТ")
     @OneToOne

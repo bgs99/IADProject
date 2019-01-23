@@ -21,7 +21,7 @@ public class EmailService {
         simpleMailMessage.setFrom("bgs99c@gmail.com");
         simpleMailMessage.setTo(to.getEmail());
         simpleMailMessage.setText(text);
-        if(env.getProperty("MAIL")!=null)
+        if(env.getProperty("PMAIL")!=null)
             javaMailSender.send(simpleMailMessage);
     }
     public void sendMail(String subject, String from, String to, String text){
@@ -30,7 +30,7 @@ public class EmailService {
         simpleMailMessage.setFrom(from);
         simpleMailMessage.setTo(to);
         simpleMailMessage.setText(text);
-        if(env.getProperty("MAIL")!=null)
+        if(env.getProperty("PMAIL")!=null)
             javaMailSender.send(simpleMailMessage);
     }
     @RequestMapping(path = "/mail", method = RequestMethod.POST)

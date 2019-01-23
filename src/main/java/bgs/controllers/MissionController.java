@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.stream.Stream;
 
 @RestController
@@ -42,6 +44,10 @@ public class MissionController {
     EmailService mail;
     @Autowired
     AgentRepository agents;
+    @Autowired
+    WeaponRepairRepository wr;
+    @Autowired
+    TransportRepairRepository tr;
 
     /**
      * Returns 10 active targets
@@ -50,10 +56,15 @@ public class MissionController {
      */
     @RequestMapping("/targets")
     public Stream<TargetInfo> getTargets(@RequestParam(value = "page", defaultValue = "0") int page,
-                                         @RequestParam(value = "page", defaultValue = "-1") int id){
+                                         @RequestParam(value = "id", defaultValue = "-1") int id,
+                                         @RequestParam(value = "people", defaultValue = "true") boolean people){
         if(id >= 0)
             return Stream.of(targets.findById(id)).map(TargetInfo::new);
-        return targets.findAllActive().stream().skip(page*10).limit(10).map(TargetInfo::new);
+        return targets.findAllActive().stream()
+                .filter(q -> q.isPerson() == people)
+                .skip(page*10)
+                .limit(10)
+                .map(TargetInfo::new);
     }
 
     /**
@@ -63,7 +74,7 @@ public class MissionController {
      */
     @RequestMapping("/missions")
     public Stream<MissionInfo> getMissions(@RequestParam(value = "page", defaultValue = "0") int page,
-                                           @RequestParam(value = "page", defaultValue = "-1") int id){
+                                           @RequestParam(value = "id", defaultValue = "-1") int id){
         if(id >= 0)
             return Stream.of(missions.findById(id)).map(q -> new MissionInfo(q, teams));
         return missions.findUnfinished().stream().skip(page * 10).limit(10).map(q -> new MissionInfo(q, teams));
@@ -120,9 +131,9 @@ public class MissionController {
         Portrait pt = portraitRepository.findByAgent(cur);
         MissionType mt = m.getType();
 
-        if(!(mt.getCharisma() >= pt.getCharisma()
-                && mt.getLoyalty() >= pt.getLoyalty()
-                && mt.getAggression() >= pt.getAggression())
+        if(!(mt.getCharisma() <= pt.getCharisma()
+                && mt.getLoyalty() <= pt.getLoyalty()
+                && mt.getAggression() <= pt.getAggression())
         ) return false;
 
 
@@ -190,6 +201,18 @@ public class MissionController {
             return false;
         m.setStatus(status);
         missions.save(m);
+        if (status.equals("Выполнена")){
+            for (Team t : m.getTeam()){
+                Weapon w = t.getWeapon();
+                wr.save(new WeaponRepair(w, null, new Timestamp(System.currentTimeMillis())));
+                if(t.getTransport() != null)
+                    tr.save(new TransportRepair(t.getTransport(), null, new Timestamp(System.currentTimeMillis())));
+            }
+            if(m.getTarget().isPerson()) {
+                m.getTarget().getPerson().kill();
+                people.save(m.getTarget().getPerson());
+            }
+        }
 
         mail.sendMail("Your mission status have been updated", m.getResponsible(),
                 String.format("Your mission (%d) status have been updated: %s", m.getId(), status));
@@ -232,7 +255,7 @@ public class MissionController {
      * @return Stream of request info
      */
     @RequestMapping("/missions/support/process")
-    public Stream<SupportRequestInfo> getSupportRequests(@RequestParam(name = "page", defaultValue = "-1", required = false) int mission,
+    public Stream<SupportRequestInfo> getSupportRequests(@RequestParam(name = "mission", defaultValue = "-1", required = false) int mission,
                                                          @RequestParam(name = "page", defaultValue = "0", required = false) int page){
         if(mission >= 0)
             return req.findAllByMission(missions.findById(mission)).stream().map(SupportRequestInfo::new);
@@ -258,9 +281,15 @@ public class MissionController {
     @RequestMapping("/missions/reports")
     public Stream<ReportInfo> getReport(@RequestParam(value = "id", defaultValue = "-1") int id,
                                         @RequestParam(value = "page", defaultValue = "0") int page){
+        Stream<ReportInfo> ret = null;
+
         if(id >= 0)
-            return reportRepository.findAllByMission(missions.findById(id)).stream().map(ReportInfo::new);
-        return reportRepository.findAll().stream().map(ReportInfo::new).skip(page*10).limit(10);
+            ret = reportRepository.findAllByMission(missions.findById(id)).stream().map(ReportInfo::new);
+        else ret = reportRepository.findAll().stream().map(ReportInfo::new).skip(page*10).limit(10);
+
+        if(manager.getJob(manager.getCurrentAgent()).getId() == 0)
+            return ret;
+        else return ret.filter(q -> q.author.getFirst() == manager.getCurrentAgent().getId());
     }
 
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 @RestController
@@ -30,8 +31,13 @@ public class RepairController {
      * @return Stream of repair info
      */
     @RequestMapping("/repairs/weapons")
-    public Stream<RepairInfo> getWeaponRepairs(){
-        return wr.findUnfinished().stream().map(RepairInfo::new);
+    public Stream<RepairInfo> getWeaponRepairs(@RequestParam("page") int page){
+        return wr.findUnfinished(manager.getCurrentAgent()).stream()
+                .sorted(Comparator.comparing(
+                (WeaponRepair q) -> Math.abs(q.getResponsible()==null? 1 : 0)))
+                .map(RepairInfo::new)
+                .skip(page*10)
+                .limit(10);
     }
 
 
@@ -40,8 +46,13 @@ public class RepairController {
      * @return Stream of repair info
      */
     @RequestMapping("/repairs/transport")
-    public Stream<RepairInfo> getTransportRepairs(){
-        return tr.findUnfinished().stream().map(RepairInfo::new);
+    public Stream<RepairInfo> getTransportRepairs(@RequestParam("page") int page){
+        return tr.findUnfinished(manager.getCurrentAgent()).stream()
+                .sorted(Comparator.comparing(
+                        (TransportRepair q) -> Math.abs(q.getResponsible() == null? 1 : 0)))
+                .map(RepairInfo::new)
+                .skip(page*10)
+                .limit(10);
     }
 
     /**
@@ -50,16 +61,16 @@ public class RepairController {
      * @return success
      */
     @RequestMapping(path = "/repairs/weapons/apply", method = RequestMethod.POST)
-    public boolean applyWeapon(@RequestParam(name = "id") int id){
+    public Long applyWeapon(@RequestParam(name = "id") int id){
         WeaponRepair r = wr.findById(id);
         if(r.getResponsible()!=null)
-            return false;
+            return null;
         Agent a = manager.getCurrentAgent();
         r.setResponsible(a);
         Timestamp ready = new Timestamp(System.currentTimeMillis() + 1000*60*60*24*10/a.getLevel());
         r.setReady(ready);
         wr.save(r);
-        return true;
+        return r.getReady().getTime();
     }
 
     /**
@@ -68,15 +79,15 @@ public class RepairController {
      * @return success
      */
     @RequestMapping(path = "/repairs/transport/apply", method = RequestMethod.POST)
-    public boolean applyTransport(@RequestParam(name = "id") int id){
+    public Long applyTransport(@RequestParam(name = "id") int id){
         TransportRepair r = tr.findById(id);
         if(r.getResponsible()!=null)
-            return false;
+            return null;
         Agent a = manager.getCurrentAgent();
         r.setResponsible(a);
         Timestamp ready = new Timestamp(System.currentTimeMillis() + 1000*60*60*24*10/a.getLevel());
         r.setReady(ready);
         tr.save(r);
-        return true;
+        return r.getReady().getTime();
     }
 }

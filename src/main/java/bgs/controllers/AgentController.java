@@ -1,16 +1,26 @@
 package bgs.controllers;
 
 import bgs.info.AgentInfo;
+import bgs.info.LoginInfo;
 import bgs.model.Agent;
 import bgs.model.Dept;
 import bgs.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.stream.Stream;
 
 @RestController
@@ -33,8 +43,30 @@ public class AgentController {
     private static RequestMethod rm = RequestMethod.GET;
 
     @RequestMapping("/dept")
-    public String showDept(){
-        return manager.getJob(manager.getCurrentAgent()).toString();
+    public Stream<String> showDept(){
+        return manager.getRights();
+    }
+
+    @Autowired
+    MyUserDetailsService muds;
+
+    @Autowired
+    AuthenticationProvider ap;
+
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public void login() {
+    }
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public LoginInfo login(@RequestParam("login") int id, @RequestParam("password") String pass) {
+        UserDetails userDetails = muds.loadUserByUsername(""+id);
+        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, pass, userDetails.getAuthorities());
+        try {
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        } catch (Exception e) {
+            return null;
+        }
+        Agent c = manager.getCurrentAgent();
+        return new LoginInfo(id, manager.getJob(c), c, manager.getRights(), manager.getCurrentMission());
     }
 
     /**
@@ -50,11 +82,14 @@ public class AgentController {
     @Transactional
     @RequestMapping("/agents")
     public Stream<AgentInfo> listAgents(@RequestParam(name = "page", defaultValue = "0") int page,
-                                        @RequestParam(name = "page", defaultValue = "-1") int id){
+                                        @RequestParam(name = "id", defaultValue = "-1") int id){
         if(id >= 0)
             return Stream.of(new AgentInfo(agents.findById(id)));
         int level = manager.getLevel();
-        return agents.findAllByLevelLessThanEqual(level).stream().skip(page*10).limit(10).map(AgentInfo::new);
+
+        return agents.findAllByLevelLessThanEqual(level).stream()
+                .filter(q -> q.getDept().getId() == manager.getCurrentAgent().getDept().getId())
+                .skip(page*10).limit(10).map(AgentInfo::new);
     }
 
     /**

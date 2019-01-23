@@ -2,9 +2,11 @@ package bgs.controllers;
 
 import bgs.info.AgentInfo;
 import bgs.info.PlaceInfo;
+import bgs.info.Registry;
 import bgs.info.TargetInfo;
 import bgs.model.Organisation;
 import bgs.model.Person;
+import bgs.model.Target;
 import bgs.repo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -58,18 +60,30 @@ public class PlaceController {
         return new PlaceInfo(places.findById(id), manager, agents, people, places, targets);
     }
 
+    @Autowired
+    MissionRepository missions;
     /**
      * Get locals from a place
      * @param id Place ID
      * @return List of person info
      */
     @RequestMapping("/place/locals")
-    public List<Person> getLocals(@RequestParam("id") int id){
-        return people.findAllByLocationOrderByDangerDesc(places.findById(id));
+    public Stream<Registry> getLocals(@RequestParam("id") int id){
+        return people.findAllByLocationOrderByDangerDesc(places.findById(id)).stream()
+                .map(q -> {
+                    Target t = targets.findByPerson(q);
+                    return new Registry(q, missions.countFinishedByPerson(q) == 0,
+                            true, t == null ? null : t.getId());
+                });
     }
     @RequestMapping("/place/org")
-    public List<Organisation> getOrgs(@RequestParam("id") int id){
-        return orgs.findAllByLocationOrderByDangerDesc(places.findById(id));
+    public Stream<Registry> getOrgs(@RequestParam("id") int id){
+        return orgs.findAllByLocationOrderByDangerDesc(places.findById(id)).stream()
+                .map(q -> {
+                    Target t = targets.findByOrganisation(q);
+                    return new Registry(q, missions.countFinishedByOrganisation(q) == 0,
+                            true, t == null ? null : t.getId());
+                });
     }
 
     /**
@@ -84,6 +98,10 @@ public class PlaceController {
     }
     @RequestMapping("/place/locals/targets")
     public Stream<TargetInfo> getLocalTargets(@RequestParam("id") int id){
-        return Stream.concat(targets.findAllPeopleByLocation(places.findById(id)).stream(), targets.findAllOrgsByLocation(places.findById(id)).stream()).map(TargetInfo::new);
+        return targets.findAllPeopleByLocation(places.findById(id)).stream().map(TargetInfo::new);
+    }
+    @RequestMapping("/place/org/targets")
+    public Stream<TargetInfo> getOrgTargets(@RequestParam("id") int id){
+        return targets.findAllOrgsByLocation(places.findById(id)).stream().map(TargetInfo::new);
     }
 }

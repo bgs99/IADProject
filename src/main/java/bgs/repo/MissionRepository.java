@@ -16,7 +16,7 @@ public interface MissionRepository extends CrudRepository<Mission, Integer> {
     int countFinishedByPerson(Person person);
     @Query("select count(m) from Mission as m join m.target as t join t.organisation as o where o = ?1 and m.status = 'Выполнена'")
     int countFinishedByOrganisation(Organisation organisation);
-    @Query("select m from Mission as m where m.status <> 'Выполнена' ")
+    @Query("select m from Mission as m where m.status <> 'Выполнена' order by m.id desc")
     List<Mission> findUnfinished();
     List<Mission> findAllByStatusIn(List<String> statuses);
 

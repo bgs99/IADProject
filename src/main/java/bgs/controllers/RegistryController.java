@@ -1,5 +1,6 @@
 package bgs.controllers;
 
+import bgs.info.Registry;
 import bgs.model.Organisation;
 import bgs.model.Person;
 import bgs.model.RegistryEntry;
@@ -9,6 +10,8 @@ import bgs.repo.OrganisationRepository;
 import bgs.repo.PersonRepository;
 import bgs.repo.TargetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.util.Pair;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 public class RegistryController {
@@ -31,42 +35,19 @@ public class RegistryController {
     @Autowired
     TargetRepository targets;
 
-    class Registry{
-        public String name;
-        public int id;
-        public Pair<Integer, String> location;
-        public double danger;
-        public boolean status;
-        public Registry(RegistryEntry r, boolean alive){
-            name = r.getName();
-            id = r.getId();
-            location = Pair.of(r.getLocation().getId(), r.getLocation().getName());
-            danger = r.getDanger();
-            status = alive;
-        }
-    }
-
     /**
      * Returns 10 active persons from registry
      * @param page Page index
      * @return List of registry info
      */
     @RequestMapping("/registry/people")
-    public List<Registry> getPeople(@RequestParam(value = "page", defaultValue = "0") int page){
-        List<Registry> ret = new ArrayList<>();
-        int skip = page * 10;
-        int take = 10;
-        for (Person p : people.findAll()){
-            if(skip > 0){
-                skip--;
-                continue;
-            }
-            if(take <= 0)
-                break;
-            take--;
-            ret.add(new Registry(p, missions.countFinishedByPerson(p) == 0));
-        }
-        return ret;
+    public Stream<Registry> getPeople(@RequestParam(value = "page", defaultValue = "0") int page){
+        return people.findAll(PageRequest.of(page, 10)).stream()
+                .map(q -> {
+                    Target t = targets.findByPerson(q);
+                    return new Registry(q, missions.countFinishedByPerson(q) == 0,
+                            true, t == null ? null : t.getId());
+                });
     }
 
     /**
@@ -75,21 +56,14 @@ public class RegistryController {
      * @return List of registry info
      */
     @RequestMapping("/registry/org")
-    public List<Registry> getOrganisations(@RequestParam(value = "page", defaultValue = "0") int page){
-        List<Registry> ret = new ArrayList<>();
-        int skip = page * 10;
-        int take = 10;
-        for (Organisation o : organisations.findAll()){
-            if(skip > 0){
-                skip--;
-                continue;
-            }
-            if(take <= 0)
-                break;
-            take--;
-            ret.add(new Registry(o, missions.countFinishedByOrganisation(o)==0));
-        }
-        return ret;
+    public Stream<Registry> getOrganisations(@RequestParam(value = "page", defaultValue = "0") int page){
+
+        return organisations.findAll().stream().skip(page*10).limit(10)
+                .map(q -> {
+                    Target t = targets.findByOrganisation(q);
+                    return new Registry(q, missions.countFinishedByOrganisation(q) == 0,
+                            true, t == null ? null : t.getId());
+                });
     }
 
     /**
@@ -98,13 +72,13 @@ public class RegistryController {
      * @return success
      */
     @RequestMapping(path = "/registry/people/target", method = RequestMethod.POST)
-    public boolean setTargetPerson(@RequestParam(value = "id") int id){
+    public Integer setTargetPerson(@RequestParam(value = "id") int id){
         Person p = people.findById(id);
         if(p == null)
-            return false;
+            return null;
         Target t = new Target(p);
         targets.save(t);
-        return true;
+        return t.getId();
     }
 
     /**
@@ -113,12 +87,12 @@ public class RegistryController {
      * @return success
      */
     @RequestMapping(path = "/registry/org/target", method = RequestMethod.POST)
-    public boolean setTargetOrganisation(@RequestParam(value = "id") int id){
+    public Integer setTargetOrganisation(@RequestParam(value = "id") int id){
         Organisation p = organisations.findById(id);
         if(p == null)
-            return false;
+            return null;
         Target t = new Target(p);
         targets.save(t);
-        return true;
+        return t.getId();
     }
 }
