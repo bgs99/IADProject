@@ -24,7 +24,7 @@ export default {
     }
   },
   actions: {
-    loadEquipmentByCar (context, id) {
+    loadEquipmentTransportById (context, id) {
       context.commit('setTabs', [], {root: true});
       axios('/transport', {
         params: {
@@ -42,7 +42,7 @@ export default {
       });
       context.commit('setMode', false);
     },
-    loadEquipmentByTransport (context, page) {
+    loadEquipmentTransportByPage (context, page) {
       context.commit('setTabs', ['Weapons', 'Transport'], {root: true});
       axios('/transport', {
         method: 'GET'
@@ -58,7 +58,7 @@ export default {
       context.commit('setMode', false);
       context.commit('setPage', +page);
     },
-    loadEquipmentByGun (context, id) {
+    loadEquipmentWeaponsById (context, id) {
       context.commit('setTabs', [], {root: true});
       axios('/weapons', {
         params: {
@@ -76,7 +76,7 @@ export default {
       });
       context.commit('setMode', true);
     },
-    loadEquipmentByWeapons (context, page) {
+    loadEquipmentWeaponsByPage (context, page) {
       context.commit('setTabs', ['Weapons', 'Transport'], {root: true});
       axios('/weapons', {
         method: 'GET'

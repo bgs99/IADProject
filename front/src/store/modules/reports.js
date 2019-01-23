@@ -38,6 +38,9 @@ export default {
         }
       });
     },
+    loadReportsById (context, id) {
+      context.commit('setReports', context.state.reports.filter(q => q.id === +id));
+    },
     loadReportsByPage (context, page) {
       axios('/missions/reports', {
         params: {
@@ -45,7 +48,7 @@ export default {
         },
         method: 'GET'
       }).then(response => {
-        context.commit('setReports', response.body);
+        context.commit('setReports', response.data);
       }).catch(error => {
         if (!context.getters.mock) {
           console.log(error);
@@ -61,7 +64,7 @@ export default {
         },
         method: 'GET'
       }).then(response => {
-        context.commit('setReports', response.body);
+        context.commit('setReports', response.data);
       }).catch(error => {
         if (!context.getters.mock) {
           console.log(error);
