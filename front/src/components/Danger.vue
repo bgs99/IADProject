@@ -1,5 +1,11 @@
 <template>
-    <div :style="{height: '20px', width: '100px', backgroundColor: 'black'}">
+    <div :style="{
+      height: '20px',
+      width: '100px',
+      backgroundColor: 'black',
+      display: 'inline-block',
+      'margin-left': '5px'
+    }">
       <div :style="{backgroundColor: 'red', width: val + 'px', height: '20px'}"></div>
     </div>
 </template>

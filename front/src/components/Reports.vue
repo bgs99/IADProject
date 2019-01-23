@@ -1,33 +1,49 @@
 <template>
-  <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 40%">
+  <div>
     <div class="root">
-      <div>
-        <router-link tag="img" :to="`/agents/id/${src.author.first}`" :src="`/static/agents/${src.author.first}.jpg`" height="100">
-        </router-link>
-        <h1>Author: {{src.author.second}}</h1>
-        <h2>Name: {{src.name}}</h2>
+      <h1 align="center">{{src.name}}</h1>
+      <div  style="display: block">
+        <h2>Author:
+          <router-link tag="img" :to="`/agents/id/${src.author.first}`"
+                       :src="`/static/agents/${src.author.first}.jpg`" height="100" width="100"
+                       style="display:inline-block; float: right; background-color: white">
+          </router-link>
+          <br>
+          {{src.author.second}}
+
+
+        </h2>
       </div>
       <br>
-      <div>
-        <router-link tag="img" :to="`/agents/id/${src.subject.first}`" :src="`/static/agents/${src.subject.first}.jpg`" height="100">
-        </router-link>
-        <h1>Subject: {{src.subject.second}}</h1>
+      <div style="display: block">
+        <h2>Subject:
+          <router-link tag="img" :to="`/agents/id/${src.subject.first}`"
+                       :src="`/static/agents/${src.subject.first}.jpg`" height="100"
+                       style="float: right; background-color: white">
+          </router-link>
+          <br>
+          {{src.subject.second}}
+
+        </h2>
       </div>
       <br>
       <h2>
         Purpose: {{src.purpose}}
       </h2>
       <br>
-      Mission: #{{src.mission.first}}
+      Mission:
       <router-link tag="button" :to="`/missions/id/${src.mission.first}`">
-        {{src.mission.second}}
+        #{{src.mission.first}} {{src.mission.second}}
       </router-link>
-      <br>
-      <p>
+      <p v-if="$route.params.source === 'id'">
+        <br>
         Description:
         <br>
         {{src.description}}
       </p>
+      <router-link v-else tag="button" :to="`/reports/id/${src.id}`" style="display: inline-block; float: right;">
+        See details
+      </router-link>
     </div>
   </div>
 </template>

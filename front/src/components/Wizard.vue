@@ -1,6 +1,6 @@
 <template>
   <form class="root" @submit.prevent="submit">
-    <div style="grid-area: header">
+    <div style="grid-area: header" class="wizard-panel">
       <label>
         Type:
         <select v-model="type">
@@ -13,14 +13,18 @@
         <input type="number" v-model="level" min="1" :max="$store.state.user.level"/>
       </label>
       <br>
-      <label>
+      <label for="wizard-desc">
         Description
-        <input type="text" v-model="desc"/>
       </label>
       <br>
-      <input type="submit" value="Submit"/>
+      <textarea id="wizard-desc" v-model="desc" cols="50" rows="20">
+      </textarea>
+      <br>
+      <input type="submit"
+             :value="(type === null || desc === '') ? 'Add type and description' : 'Submit'"
+             :disabled="type === null || desc === ''"/>
     </div>
-    <Targets style="grid-area: target; width: 90%" :src="target"></Targets>
+    <Targets class="panel"  style="grid-area: target; width: 90%" :src="target"></Targets>
 
   </form>
 </template>
@@ -69,18 +73,47 @@
           return;
         }
         this.$store.dispatch('addMission', {type: +this.type, level: +this.level, desc: this.desc});
-        this.$router.replace('/missions/page/0');
       }
     }
   }
 </script>
 
 <style scoped>
+  .panel {
+    box-sizing: border-box;
+    background-color: lightgray;
+    display: inline-block;
+    margin: 1%;
+    padding: 0.5%;
+    border-style: solid;
+    border-width: 5px;
+    border-color: white;
+    border-radius: 4px;
+  }
+  .panel > div {
+    background-color: #000080;
+    padding: 0.5%
+  }
+  .wizard-panel {
+    margin: 10px;
+    padding: 10px;
+    border-style: solid;
+    border-color: white;
+    background-color: #000080;
+  }
+  .wizard-panel > * {
+    margin: 5px;
+    vertical-align: middle;
+  }
+  .wizard-panel > label > * {
+    float: right;
+  }
   .root {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: min-content;
+    grid-template-columns: max-content auto 50%;
+    grid-template-rows: min-content min-content;
     grid-template-areas:
-      "header target";
+      "header . target"
+      "header . ."
   }
 </style>

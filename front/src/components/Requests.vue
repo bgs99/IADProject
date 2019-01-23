@@ -1,5 +1,5 @@
 <template>
-  <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 40%">
+  <div>
     <div class="root">
       <div>
         <h1>#{{src.mission.first}} Mission target: {{src.mission.second}}</h1>
@@ -32,7 +32,7 @@
         {{src.data}}
       </p>
       <br>
-      <button v-if="!src.seen" @click="$store.dispatch('requestSeen', src.id)">Mark as 'seen'</button>
+      <button v-if="!src.seen && $store.getters.admin" @click="$store.dispatch('requestSeen', src.id)">Mark as 'seen'</button>
     </div>
   </div>
 </template>

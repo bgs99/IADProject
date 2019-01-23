@@ -19,17 +19,17 @@
       </router-link>
       <button disabled v-else>None</button>
       <div>Danger: <Danger :val="map.danger"></Danger></div>
-      <router-link tag="button" :to="`/people/location/${map.id}`">
+      <router-link tag="button" :to="`/registry/people/location/${map.id}`">
         {{'Population(' + map.population + ')'}}
       </router-link><br>
       <router-link tag="button" :to="`/agents/location/${map.id}`">
         {{'Agents(' + map.cops + ')'}}
       </router-link><br>
-      <router-link tag="button" :to="`/targets/location/${map.id}`">
+      <router-link tag="button" :to="`/targets/people/location/${map.id}`">
         {{'Targets(' + map.targets + ')'}}
       </router-link><br>
       <div>Units</div>
-      <div style="overflow: auto">
+      <div class="subtree" style="overflow: auto">
         <router-link tag="button" v-for="unit in map.units"  :to="`/map/${unit.first}`" :key="unit.first">
           {{unit.second.replace(/_/g, ' ')}}
         </router-link>
@@ -71,15 +71,10 @@
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  router-link {
-    white-space: normal;
-    width: 90%;
+  .subtree {
+    height: auto;
   }
-</style>
-
-<style scoped>
   circle {
     cursor: pointer;
   }
@@ -87,17 +82,70 @@
   circle:hover {
     fill: white;
   }
-
   circle.active {
     fill: lightgray;
   }
   .map-root {
+    box-sizing: border-box;
     display: grid;
+    grid-column-gap: 0.5%;
   }
-  .map-root {
-    grid-template-columns: 80% 20%;
-    grid-template-rows: auto;
-    grid-template-areas:
-      "map info";
+
+  @media screen and (min-width: 1238px) {
+    .map-root {
+      grid-template-columns: 79.5% 20%;
+      grid-template-rows: auto;
+      grid-template-areas:
+        "map info";
+    }
+    button {
+      white-space: normal;
+      width: 90%;
+    }
+  }
+
+  @media screen and (min-width: 818px) and (max-width: 1237px){
+    button {
+      white-space: normal;
+      min-width: 30%;
+      min-height: 40px;
+    }
+    .map-root {
+      grid-template-columns: 100%;
+      grid-template-rows: auto min-content;
+      grid-template-areas:
+        "map"
+        "info";
+    }
+    .subtree {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-auto-rows: 1fr;
+      grid-auto-flow: row;
+    }
+  }
+  @media screen and (max-width: 817px){
+    button {
+      white-space: normal;
+      width: 100%;
+      min-height: 40px;
+    }
+    .map-root {
+      grid-template-columns: 100%;
+      grid-template-rows: min-content;
+      grid-template-areas:
+        "info";
+    }
+    .map-root > svg {
+      display: none;
+    }
+    .subtree {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 100%;
+      grid-auto-rows: 1fr;
+      grid-auto-flow: row;
+    }
   }
 </style>

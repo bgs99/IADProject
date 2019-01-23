@@ -1,60 +1,67 @@
 <template>
-  <div style="background-color: lightgray; display: inline-block; margin: 20px; width: 90%">
+  <div :wide="$route.params.source === 'id'">
     <div class="mission-root">
       <div style="grid-area: mission-target">
-        <h1>
+        <h1 align="center">
           #{{src.id}} {{src.targetName}}
         </h1>
         <h2>
           {{src.type}}
+          <router-link tag="button" :to="`/targets/id/${src.targetId}`">
+            Go to target
+          </router-link>
         </h2>
-        <router-link tag="button" :to="`/targets/id/${src.targetId}`">
-          Go to target
-        </router-link>
         <template id="participation" v-if="$store.getters.field && src.status === 'Создана' && $store.state.user.types.includes(src.type)">
           <template>
-            <button v-if="!$store.state.currentMission"
-                    @click="$store.dispatch('participate', src.id)">Participate</button>
-            <button v-else-if="$store.state.currentMission.id === src.id
+            <button v-if="$store.getters.missionId === null"
+                    @click="$store.dispatch('participate', src.id); $router.push(`/missions/id/${src.id}`)">Participate</button>
+            <button v-else-if="$store.getters.missionId === src.id
                               && !$store.state.currentMission.ready
                               && $store.state.currentMission.weapon !== undefined"
                     @click="$store.dispatch('missionReady')">Ready</button>
           </template>
-          <div v-if="$store.state.currentMission && $store.state.currentMission.id === src.id">
-            <router-link tag="button" to="/equipment/weapons/0"
+          <div class="subpanel" v-if="$store.getters.missionId === src.id
+                      && $route.params.source === 'id'
+                      && !$store.state.currentMission.ready
+                      && !src.team.map(q => q.first.id).includes($store.state.user.id)">
+            <router-link tag="button" to="/equipment/weapons/page/0"
                          v-if="$store.state.currentMission.weapon === undefined && !$store.state.currentMission.ready">
               Select weapon
             </router-link>
             <div v-else-if="$store.state.currentMission.weapon !== undefined">
               Weapon:
+              <br>
               <img :src="`/static/weapons/${$store.state.currentMission.weapon}.jpg`" height="100">
               {{$store.getters.weapons.find(q => q.id === $store.state.currentMission.weapon).name}}
             </div>
-            <router-link tag="button" to="/equipment/transport/0"
+            <router-link tag="button" to="/equipment/transport/page/0"
                          v-if="$store.state.currentMission.transport  === undefined && !$store.state.currentMission.ready">
               Select transport (optional)
             </router-link>
             <div v-else-if="$store.state.currentMission.transport !== undefined">
               Transport:
+              <br>
               <img :src="`/static/transport/${$store.state.currentMission.transport}.jpg`" height="100">
               {{$store.getters.transport.find(q => q.id === $store.state.currentMission.transport).name}}
             </div>
-            <router-link tag="button" to="/people/page/0"
+            <router-link tag="button" to="/registry/people/page/0"
                          v-if="$store.state.currentMission.cover === undefined && !$store.state.currentMission.ready">
               Select cover (optional)
             </router-link>
             <div v-else-if="$store.state.currentMission.cover !== undefined">
               Cover:
+              <br>
               <img :src="`/static/people/${$store.state.currentMission.cover}.jpg`" height="100">
               #{{$store.state.currentMission.cover}}
             </div>
           </div>
         </template>
-        <button id="start-mission" v-if="$store.state.currentMission !== undefined
-                      && $store.state.currentMission.id === src.id
+        <button id="start-mission" v-if="currentMission
+                      && $store.getters.admin
                       && src.status === 'Создана'
                       && src.team.length >= src.minimalTeam"
                 @click="$store.dispatch('startMission'); status = 'Выполняется'">Start</button>
+        <button v-else-if="$store.getters.admin && currentMission && src.status === 'Создана'" disabled>{{src.minimalTeam - src.team.length}} more agents to start</button>
         <p>
           Danger level <Danger :val="src.danger"></Danger>
         </p>
@@ -63,12 +70,12 @@
           {{src.location.second}}
         </router-link>
         </p>
-        <p>
-          {{src.desc}}
-        </p>
-        <label id="status-management" v-if="$store.state.currentMission !== undefined
-                      && $store.state.currentMission.id === src.id
-                      && src.status !== 'Создана'">
+        Current status: {{src.status}} <br>
+        <router-link v-if="$route.params.source !== 'id'" tag="button" :to="`/missions/id/${src.id}`">See details</router-link>
+        <template id="mission-details-management" v-if="$route.params.source === 'id'">
+
+        <label id="status-management" v-if="currentMission
+                      && src.status !== 'Создана' && src.status !== 'Выполнена'">
           Change status:
           <input type="text" v-model="status"/>
           <button v-if="status.length > 0 && status !== src.status" @click="$store.dispatch('setStatus', status)">Change</button>
@@ -77,58 +84,74 @@
         <p v-else>
           Status: {{src.status}}
         </p>
-        <div id="reports" v-if="(src.team.find(q => q.id === $store.state.user.id) !== undefined
+        <p>
+          {{src.desc}}
+        </p>
+        <div id="reports" v-if="(src.team.find(q => q.first.id === $store.state.user.id) !== undefined
                                 || src.responsible === $store.state.user.id)
                                 && !['Создана', 'Выполняется'].includes(src.status)">
           <button v-if="!report.active" @click="report.active = true">Write a report</button>
-          <form v-else @submit.prevent="sendReport">
-            <label>Name: <input type="text" v-model="report.name" required/></label>
-            <label>Purpose: <input type="text" v-model="report.purp" required/></label>
-            <label>Subject:
+          <form class="subpanel" v-else @submit.prevent="sendReport">
+            <label>Name: <br><input type="text" v-model="report.name" required/></label>
+            <br>
+            <label>Purpose: <br><input type="text" v-model="report.purp" required/></label>
+            <br>
+            <label>Subject: <br>
               <select v-model.number="report.agent">
                 <option v-for="a in src.team.map(q => q.first)" :key="a.id" :value="a.id">
                   {{a.name}}
                 </option>
               </select>
             </label>
-            <label>Description: <textarea cols="50" rows="10" v-model="report.desc"></textarea></label>
+            <br>
+            <label>Description: <br> <textarea cols="50" rows="10" v-model="report.desc"></textarea></label>
+            <br>
             <input v-if="report.agent >=0 && report.desc.length >0 && report.purp.length>0 && report.name.length > 0"
                    type="submit" value="Submit"/>
             <button @click="report.active = false">Hide</button>
           </form>
           <router-link tag="button" :to="`/reports/mission/${src.id}`">Show reports</router-link>
         </div>
-        <div id="support" v-if="(src.team.find(q => q.id === $store.state.user.id) !== undefined
+        <div id="support" v-if="(src.team.find(q => q.first.id === $store.state.user.id) !== undefined
                                 || src.responsible === $store.state.user.id)
-                                && ['Создана', 'Выполняется'].includes(src.status)">
+                                && !['Создана', 'Выполнена'].includes(src.status)">
           <button v-if="!support.active"
                   @click="support.active = true;
-                          $store.dispatch('loadEquipmentByTransport', 0);
-                          $store.dispatch('loadEquipmentByWeapons', 0);">Request support</button>
-          <form v-else @submit.prevent="requestSupport">
-            <label>Amount of soldiers: <input type="number" v-model.number="support.soldiers"/></label>
-            <label>Weapon:
+                          $store.dispatch('loadEquipmentTransportByPage', 0);
+                          $store.dispatch('loadEquipmentWeaponsByPage', 0);">Request support</button>
+          <form class="subpanel" v-else @submit.prevent="requestSupport">
+            <label>Amount of soldiers: <br> <input type="number" v-model.number="support.soldiers"/></label>
+            <br>
+            <label>Weapon: <br>
               <select v-model.number="support.weapons">
                 <option v-for="a in $store.getters.weapons" :key="a.id" :value="a.id">
                   {{a.name}}
                 </option>
               </select>
             </label>
+            <br>
             <label>Transport:
+              <br>
               <select v-model.number="support.transport">
                 <option v-for="a in $store.getters.transport" :key="a.id" :value="a.id">
                   {{a.name}}
                 </option>
               </select>
             </label>
-            <label>Data: <textarea cols="50" rows="10" v-model="support.data"></textarea></label>
+            <br>
+            <label>Data:
+              <br><textarea cols="50" rows="10" v-model="support.data"></textarea></label>
+            <br>
             <input type="submit" value="Submit"/>
             <button @click="support.active = false">Hide</button>
           </form>
+          <router-link v-if="$store.getters.admin" tag="button" :to="`/requests/mission/${src.id}`">Go to requests</router-link>
         </div>
-
+        </template>
       </div>
-      <div style="grid-area: mission-team">
+
+      <template id="mission-details-all" v-if="$route.params.source === 'id'">
+      <div style="grid-area: mission-team" v-if="src.team.length > 0">
         <h2 align="center">
           Team
         </h2>
@@ -151,14 +174,14 @@
           </tr>
         </table>
       </div>
-      <div style="grid-area: mission-transp">
+      <div style="grid-area: mission-transp" v-if="src.transport.length > 0">
         <h2 align="center">Transport</h2>
         <div v-for="ag in src.transport" :key="ag.id">
           <img :src="`/static/transport/${ag.id}.jpg`" height="100"/>
           {{ag.name}}
         </div>
       </div>
-
+      </template>
     </div>
   </div>
 </template>
@@ -170,6 +193,11 @@
   name: 'Missions',
     components: {Danger},
     props: ['src'],
+    computed: {
+      currentMission () {
+        return this.$store.getters.missionId === this.src.id
+      }
+    },
     methods: {
       sendReport () {
         this.$store.dispatch('sendReport', this.report);
@@ -220,12 +248,31 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .mission-root {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    grid-template-areas:
-      "mission-target  mission-target"
-      "mission-team    mission-transp"
+  .subpanel {
+    background-color: lightgray;
+    color: black;
+    border: white medium solid;
+    border-radius: 5px;
+  }
+  @media screen and (min-width: 818px){
+    .mission-root {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        "mission-target  mission-target"
+        "mission-team    mission-transp"
+    }
+  }
+  @media screen and (max-width: 817px){
+    .mission-root {
+      display: grid;
+      grid-template-columns: 100%;
+      grid-template-rows: auto auto auto;
+      grid-template-areas:
+        "mission-target"
+        "mission-transp"
+        "mission-team";
+    }
   }
 </style>

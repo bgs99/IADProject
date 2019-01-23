@@ -26,12 +26,24 @@
     },
     methods: {
       enter () {
-        this.$store.dispatch('login', {login: login, password: pass});
+        this.$store.dispatch('login', {login: this.login, password: this.pass}).then();
       }
     }
   };
 </script>
 
 <style scoped>
-
+  form {
+    position: absolute;
+    width: min-content;
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-50%);
+  }
+  label {
+    color: white;
+  }
+  input {
+    float: right;
+  }
 </style>
