@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,15 +57,14 @@ public class AgentController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public void login() {
     }
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public LoginInfo login(@RequestParam("login") int id, @RequestParam("password") String pass) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json")
+    public LoginInfo login(@RequestParam("login") int id, @RequestParam("password") String pass) throws Exception {
         UserDetails userDetails = muds.loadUserByUsername(""+id);
-        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, pass, userDetails.getAuthorities());
-        try {
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        } catch (Exception e) {
+        if(! new BCryptPasswordEncoder().matches(pass, userDetails.getPassword())){
             return null;
         }
+        Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, pass, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(auth);
         Agent c = manager.getCurrentAgent();
         return new LoginInfo(id, manager.getJob(c), c, manager.getRights(), manager.getCurrentMission());
     }

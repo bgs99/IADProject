@@ -11,7 +11,7 @@
                    v-for="tab in $store.state.tabs" :key="tab"
                    :to="`/${$route.params.collection}/${tab[0].toLowerCase() + tab.slice(1)}/${$route.params.source}/0`">{{tab}}</router-link>
     </div>
-    <template v-if="list.length === 10">
+    <template v-if="list.length === 10 && !fullList">
       <router-link width="100px" tag="button" :to="`/${$route.params.collection}/${$route.params.filter}/${$route.params.source}/${+$route.params.id-1}`"
                    v-if="$route.params.id > 0">
         Previous
@@ -25,7 +25,7 @@
     <div class="root">
       <component :wide="$route.params.source === 'id'" class="panel" :is="comp" v-for="el in list" :key="el.id" :src="el"></component>
     </div>
-    <template v-if="list.length === 10">
+    <template v-if="list.length === 10 && !fullList">
       <router-link width="100px" tag="button" :to="`/${$route.params.collection}/${$route.params.filter}/${$route.params.source}/${+$route.params.id-1}`"
                    v-if="$route.params.id > 0">
         Previous
@@ -63,6 +63,9 @@
     computed: {
       list () {
         return this.$store.getters[this.comp[0].toLowerCase() + this.comp.slice(1)];
+      },
+      fullList () {
+        return ['agents', 'equipment'].includes(this.$route.params.collection);
       }
     },
     created () {

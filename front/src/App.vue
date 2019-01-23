@@ -34,7 +34,7 @@
               :class="{tablinks: true, active: $route.params.collection === 'registry', menuOpen: inMenu}">Registry</button>
       <button v-if="$store.getters.admin" @click="navigate('/requests/page/0')"
               :class="{tablinks: true, active: $route.params.collection === 'requests', menuOpen: inMenu}">Requests</button>
-      <button v-if="$store.getters.admin || $store.getters.field"
+      <button v-if="$store.getters.admin"
         @click="navigate('/reports/page/0')"
               :class="{tablinks: true, active: $route.params.collection === 'reports', menuOpen: inMenu}">Reports</button>
       <button
