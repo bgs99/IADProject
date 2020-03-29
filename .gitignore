@@ -1,0 +1,6 @@
+.git
+build
+out
+gradle
+.idea
+src/main/resources/static
